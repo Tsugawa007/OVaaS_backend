@@ -5,7 +5,7 @@ from PIL import Image
 import preprocessing as prep
 from time import time
 ###1106
-from .utils.codec import CTCCodec
+from utils.codec import CTCCodec
 import grpc
 from tensorflow import make_tensor_proto, make_ndarray
 from tensorflow_serving.apis import predict_pb2

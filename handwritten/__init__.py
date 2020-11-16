@@ -2,9 +2,7 @@ import logging
 import azure.functions as func
 import numpy as np
 from PIL import Image
-#import io
 import preprocessing as prep
-#from . import preprocessing as prep 
 from time import time
 ###1106
 from .utils.codec import CTCCodec
@@ -42,7 +40,7 @@ def main(req: func.HttpRequest,context: func.Contex) -> func.HttpResponse:
                 return func.HttpResponse(f'only accept jpeg images',status_code=400)
 
             #get japanese_char_list by char_list_path
-            #path error
+            #path error[OK]
             characters = prep.get_characters("data/kondate_nakayosi_char_list.txt")
             codec = CTCCodec(characters)
 

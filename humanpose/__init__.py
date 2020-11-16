@@ -60,7 +60,7 @@ def main(req: func.HttpRequest,context: func.Context) -> func.HttpResponse:
             start = time()
             channel = grpc.insecure_channel("{}:{}".format(_HOST, _PORT))
             stub = prediction_service_pb2_grpc.PredictionServiceStub(channel)
-            result = stub.Predict(request, 10.0)
+            result = stub.Predict(request, timeout=10.0)
             
             pafs = make_ndarray(result.outputs["Mconv7_stage2_L1"])[0]
             heatmaps = make_ndarray(result.outputs["Mconv7_stage2_L2"])[0]
@@ -73,9 +73,9 @@ def main(req: func.HttpRequest,context: func.Context) -> func.HttpResponse:
             # post processing
             c = posp.estimate_pose(heatmaps,pafs)
             response_image = posp.draw_to_image(img_cv_copied,c)
-            cv2.imshow('test',response_image)
-            cv2.waitKey(0)
-            cv2.destroyAllWindows()
+            # cv2.imshow('test',response_image)
+            # cv2.waitKey(0)
+            # cv2.destroyAllWindows()
            
             imgbytes = cv2.imencode('.jpg',response_image)[1].tobytes()
             MIMETYPE =  'image/jpeg'

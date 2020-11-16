@@ -13,12 +13,16 @@ from tensorflow_serving.apis import predict_pb2
 from tensorflow_serving.apis import prediction_service_pb2_grpc
 ###
 _HOST = 'ovaasbackservertest.japaneast.cloudapp.azure.com'
-_PORT = '9002'
+_PORT = '9002' #port closed
 
+# FIXIT CAN NOT RUN!.
+# multiendpoint 
+# maybe should rewrite the azure configure file
 def main(req: func.HttpRequest,context: func.Contex) -> func.HttpResponse:
     _NAME = 'image'
     
     event_id = context.invocation_id
+    # Fix the logging info
     logging.info(f"Python humanpose function start process.\nID:{event_id}\nback server host:{_HOST}:{_PORT}")
    
     method = req.method
@@ -37,12 +41,14 @@ def main(req: func.HttpRequest,context: func.Contex) -> func.HttpResponse:
                 return func.HttpResponse(f'only accept jpeg images',status_code=400)
 
             #get japanese_char_list by char_list_path
+            #path error
             characters = prep.get_characters("data/kondate_nakayosi_char_list.txt")
             codec = CTCCodec(characters)
 
             # pre processing
             img = files.read()
-            ##img = prep.to_pil_image(img) 
+            ##img = prep.to_pil_image(img)
+            #the width is too long
             input_batch_size, input_channel, input_height, input_width= (1,1,96,2000)
             input_image = prep.preprocess_input(img, height=input_height, width=input_width)[None,:,:,:]
 
@@ -54,7 +60,7 @@ def main(req: func.HttpRequest,context: func.Contex) -> func.HttpResponse:
             start = time()
             channel = grpc.insecure_channel("{}:{}".format(_HOST, _PORT))
             stub = prediction_service_pb2_grpc.PredictionServiceStub(channel)
-            output = stub.Predict(request, 10.0)
+            output = stub.Predict(request,timeout = 10.0)
 
 
             
@@ -63,6 +69,7 @@ def main(req: func.HttpRequest,context: func.Contex) -> func.HttpResponse:
 
 
             result = codec.decode(output["output"])
+            # just response result and status code
             return func.HttpResponse(f"Did you wirte {result}!! This HTTP triggered function executed successfully.")
 
         else:

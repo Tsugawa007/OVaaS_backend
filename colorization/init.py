@@ -21,9 +21,12 @@ from tensorflow_serving.apis import prediction_service_pb2_grpc, get_model_metad
 import traceback
 import cv2
 
-
+#file name should be __init__.py
+# FIXIT CAN NOT RUN!.
+# multiendpoint 
+# maybe should rewrite the azure configure file
 _HOST = 'ovaasbackservertest.japaneast.cloudapp.azure.com'
-_PORT = '10002'
+_PORT = '10002' #should use another port
 
 def main(req: func.HttpRequest) -> func.HttpResponse:
     _NAME = 'image'
@@ -39,10 +42,11 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
 
 
     # Setup coeffs
+    # where is the file?
     coeffs = "public/colorization-v2/colorization-v2.npy"
     color_coeff = np.load(coeffs).astype(np.float32)
     assert color_coeff.shape == (313, 2), "Current shape of color coefficients does not match required shape"
-
+    #if use assert,write the exception processing
 
 
 
@@ -59,6 +63,9 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
 
 
             # Get input shape info from Model Server
+
+            #should rewrite preprocessing.totally unusable.
+            #maybe directly define is better
             input_name, input_shape, output_name, output_shape = prep.__get_input_name_and_shape__()
             input_batchsize = input_shape[0]
             input_channel = input_shape[1]
@@ -67,7 +74,8 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
 
             # preprocessing
             img_bin = files.read()  # get image_bin form request
-            original_frame = prep.to_pil_image(img_bin)            
+            original_frame = prep.to_pil_image(img_bin)
+            
             input_image=prep.__preprocess_input__(original_frame,input_width,input_height,input_batchsize,input_channel)
             
 

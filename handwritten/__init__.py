@@ -3,7 +3,8 @@ import azure.functions as func
 import numpy as np
 from PIL import Image
 #import io
-from . import preprocessing as prep 
+import preprocessing as prep
+#from . import preprocessing as prep 
 from time import time
 ###1106
 from .utils.codec import CTCCodec

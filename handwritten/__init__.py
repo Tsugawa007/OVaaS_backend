@@ -5,7 +5,7 @@ from PIL import Image
 import preprocessing as prep
 from time import time
 ###1106
-from utils.codec import CTCCodec
+from codec import CTCCodec 
 import grpc
 from tensorflow import make_tensor_proto, make_ndarray
 from tensorflow_serving.apis import predict_pb2
@@ -41,7 +41,7 @@ def main(req: func.HttpRequest,context: func.Contex) -> func.HttpResponse:
 
             #get japanese_char_list by char_list_path
             #path error[OK]
-            characters = prep.get_characters("data/kondate_nakayosi_char_list.txt")
+            characters = prep.get_characters("kondate_nakayosi_char_list.txt")
             codec = CTCCodec(characters)
 
             # pre processing

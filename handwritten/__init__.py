@@ -22,8 +22,8 @@ def main(req: func.HttpRequest,context: func.Contex) -> func.HttpResponse:
     _NAME = 'image'
     
     event_id = context.invocation_id
-    # Fix the logging info
-    logging.info(f"Python humanpose function start process.\nID:{event_id}\nback server host:{_HOST}:{_PORT}")
+    # Fix the logging info[OK]
+    logging.info(f"Python handwritten function start process.\nID:{event_id}\nback server host:{_HOST}:{_PORT}")
    
     method = req.method
     url    = req.url

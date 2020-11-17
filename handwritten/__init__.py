@@ -1,54 +1,60 @@
+import sys
+import os
 import logging
+
 import azure.functions as func
 import numpy as np
 from PIL import Image
-import preprocessing as prep
+from . import preprocessing as prep
 from time import time
 ###1106
-from codec import CTCCodec 
+from .codec import CTCCodec 
 import grpc
 from tensorflow import make_tensor_proto, make_ndarray
 from tensorflow_serving.apis import predict_pb2
 from tensorflow_serving.apis import prediction_service_pb2_grpc
-###
-_HOST = 'ovaasbackservertest.japaneast.cloudapp.azure.com'
-_PORT = '9002' #port closed
 
-# FIXIT CAN NOT RUN!.
-# multiendpoint 
-# maybe should rewrite the azure configure file
-def main(req: func.HttpRequest,context: func.Contex) -> func.HttpResponse:
+# TODO
+# make a exception processing for if result == Null
+
+_HOST = 'ovaasbackservertest.japaneast.cloudapp.azure.com'
+_PORT = '10003'
+
+def main(req: func.HttpRequest,context: func.Context) -> func.HttpResponse:
+
     _NAME = 'image'
     
     event_id = context.invocation_id
-    # Fix the logging info[OK]
+
     logging.info(f"Python handwritten function start process.\nID:{event_id}\nback server host:{_HOST}:{_PORT}")
    
-    method = req.method
-    url    = req.url
-    params = req.params
-
-    if method != 'POST':
-        logging.warning(f'ID:{event_id},the method was {files.content_type}.refused.')
-        return func.HttpResponse(f'only accept POST method',status_code=400)
+   
 
     try:
+        method = req.method
+        url    = req.url
+        params = req.params
         files = req.files[_NAME]
+
+        if method != 'POST':
+            logging.warning(f'ID:{event_id},the method was {files.content_type}.refused.')
+            return func.HttpResponse(f'only accept POST method',status_code=400)
+        
         if files:
             if files.content_type != 'image/jpeg':
                 logging.warning(f'ID:{event_id},the file type was {files.content_type}.refused.')
                 return func.HttpResponse(f'only accept jpeg images',status_code=400)
 
             #get japanese_char_list by char_list_path
-            #path error[OK]
-            characters = prep.get_characters("kondate_nakayosi_char_list.txt")
+            # logging.info(os.getcwd())
+            CHARSET_PATH = "./handwritten/kondate_nakayosi_char_list.txt"
+            characters = prep.get_characters(CHARSET_PATH)
             codec = CTCCodec(characters)
 
             # pre processing
             img = files.read()
-            ##img = prep.to_pil_image(img)
-            #the width is too long
-            input_batch_size, input_channel, input_height, input_width= (1,1,96,2000)
+            #FIXED the width is too long
+            input_batch_size, input_channel, input_height, input_width= (1,1,96,1000)
             input_image = prep.preprocess_input(img, height=input_height, width=input_width)[None,:,:,:]
 
             request = predict_pb2.PredictRequest()
@@ -68,11 +74,11 @@ def main(req: func.HttpRequest,context: func.Contex) -> func.HttpResponse:
 
 
             result = codec.decode(output["output"])
-            # just response result and status code
+            #FIXIT just response result and status code
             return func.HttpResponse(f"Did you wirte {result}!! This HTTP triggered function executed successfully.")
 
         else:
-            logging.warning(f'ID:{event_id},Failed to get image,down.')
+            logging.warning(f'ID:{event_id},Failed to get file,down.')
             return func.HttpResponse(f'no image files', status_code=400)
 
     except grpc.RpcError as e:

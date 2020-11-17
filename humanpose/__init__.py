@@ -29,16 +29,16 @@ def main(req: func.HttpRequest,context: func.Context) -> func.HttpResponse:
     event_id = context.invocation_id
     logging.info(f"Python humanpose function start process.\nID:{event_id}\nback server host:{_HOST}:{_PORT}")
 
-    method = req.method
-    url = req.url
-    header = req.headers
-
-    if method != 'POST':
-        logging.warning(f'ID:{event_id},the method was {files.content_type}.refused.')
-        return func.HttpResponse(f'only accept POST method',status_code=400)
-
     try:
+        method = req.method
+        url = req.url
+        header = req.headers
         files = req.files[_NAME]
+
+        if method != 'POST':
+            logging.warning(f'ID:{event_id},the method was {files.content_type}.refused.')
+            return func.HttpResponse(f'only accept POST method',status_code=400)
+        
         if files:
             if files.content_type != 'image/jpeg':
                 logging.warning(f'ID:{event_id},the file type was {files.content_type}.refused.')

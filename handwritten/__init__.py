@@ -68,6 +68,7 @@ def main(req: func.HttpRequest,context: func.Context) -> func.HttpResponse:
             channel = grpc.insecure_channel("{}:{}".format(_HOST, _PORT))
             stub = prediction_service_pb2_grpc.PredictionServiceStub(channel)
             output = stub.Predict(request,timeout = 10.0)
+            logging.warning(f'Output:{output}')
             logging.warning(f'Grpc Success')
 
 

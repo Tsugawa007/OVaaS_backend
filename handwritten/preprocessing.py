@@ -1,8 +1,8 @@
 import numpy as np
 import cv2
-#from PIL import Image
+from PIL import Image
 #import base64
-#import io
+import io
 
 
 def to_pil_image(img_bin):
@@ -16,7 +16,8 @@ def get_characters(char_list_path):
 
 ##This function change the type of picture into the type of Openvinomodel
 def preprocess_input(image, height, width):
-    src = cv2.imread(image, cv2.IMREAD_GRAYSCALE)
+    #src = cv2.imread(image, cv2.IMREAD_GRAYSCALE)
+    src = cv2.cvtColor(np.asarray(image),cv2.IMREAD_GRAYSCALE)
     ratio = float(src.shape[1]) / float(src.shape[0])
     tw = int(height * ratio)
     rsz = cv2.resize(src, (tw, height), interpolation=cv2.INTER_AREA).astype(np.float32)

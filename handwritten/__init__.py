@@ -18,8 +18,7 @@ from tensorflow_serving.apis import prediction_service_pb2_grpc
 # make a exception processing for if result == Null
 
 _HOST = 'ovaasbackservertest.japaneast.cloudapp.azure.com'
-#_PORT = '10003'
-_PORT = '9002'
+_PORT = '10003'
 def main(req: func.HttpRequest,context: func.Context) -> func.HttpResponse:
 
     _NAME = 'image'

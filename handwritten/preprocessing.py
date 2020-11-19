@@ -15,9 +15,9 @@ def get_characters(char_list_path):
         return ''.join(line.strip('\n') for line in f)
 
 ##This function change the type of picture into the type of Openvinomodel
-def preprocess_input(image, height, width):
+def preprocess_input(src, height, width):
     #src = cv2.imread(image, cv2.IMREAD_GRAYSCALE)
-    src = cv2.cvtColor(np.asarray(image),cv2.IMREAD_GRAYSCALE)
+    #src = cv2.cvtColor(np.asarray(image),cv2.IMREAD_GRAYSCALE)
     ratio = float(src.shape[1]) / float(src.shape[0])
     tw = int(height * ratio)
     rsz = cv2.resize(src, (tw, height), interpolation=cv2.INTER_AREA).astype(np.float32)

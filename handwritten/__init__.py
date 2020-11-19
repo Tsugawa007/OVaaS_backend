@@ -70,7 +70,6 @@ def main(req: func.HttpRequest,context: func.Context) -> func.HttpResponse:
             output = stub.Predict(request,timeout = 10.0)
             logging.warning(f'Output:{output}')
             logging.warning(f'Output2:{output["output"]}')
-            logging.warning(f'Output2:{output["output"][0]}')
             logging.warning(f'Grpc Success')
 
 

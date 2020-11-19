@@ -79,7 +79,7 @@ def main(req: func.HttpRequest,context: func.Context) -> func.HttpResponse:
             logging.warning(f"Inference complete,Takes{timecost}")
 
 　　　　　　　
-            result = codec.decode(output["output"][0])
+            result = codec.decode(output)
             #result = codec.decode(output)
             #FIXIT just response result and status code
             logging.warning(f'Did you wirte {result}!! This connection is  successful!!')

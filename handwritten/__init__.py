@@ -53,7 +53,7 @@ def main(req: func.HttpRequest,context: func.Context) -> func.HttpResponse:
             # pre processing
             img = files.read()
             #FIXED the width is too long
-            input_batch_size, input_channel, input_height, input_width= (1,1,96,1000)
+            input_batch_size, input_channel, input_height, input_width= (1,1,96,2000)
             input_image = prep.preprocess_input(img, height=input_height, width=input_width)[None,:,:,:]
 
             request = predict_pb2.PredictRequest()

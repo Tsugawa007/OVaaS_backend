@@ -52,6 +52,7 @@ def main(req: func.HttpRequest,context: func.Context) -> func.HttpResponse:
             logging.warning(f'Codec Success')
             # pre processing
             img_bin= files.read()
+            ogging.warning(f'img_bin_shape:{img_bin.shape}img_bin_type{type(img_bin)}')
             img = prep.to_pil_image(img_bin)
             #FIXED the width is too long
             input_batch_size, input_channel, input_height, input_width= (1,1,96,2000)

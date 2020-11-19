@@ -78,6 +78,7 @@ def main(req: func.HttpRequest,context: func.Context) -> func.HttpResponse:
 
             result = codec.decode(output["output"])
             #FIXIT just response result and status code
+            logging.warning(f'Did you wirte {result}!! This connection is  successful!!')
             return func.HttpResponse(f"Did you wirte {result}!! This HTTP triggered function executed successfully.")
 
         else:

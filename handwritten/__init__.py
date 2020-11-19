@@ -51,8 +51,8 @@ def main(req: func.HttpRequest,context: func.Context) -> func.HttpResponse:
             codec = CTCCodec(characters)
             logging.warning(f'Codec Success')
             # pre processing
-            img = files.read()
-            img = prep.to_pil_image(img)
+            img_bin= files.read()
+            img = prep.to_pil_image(img_bin)
             #FIXED the width is too long
             input_batch_size, input_channel, input_height, input_width= (1,1,96,2000)
             input_image = prep.preprocess_input(img, height=input_height, width=input_width)[None,:,:,:]

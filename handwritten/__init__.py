@@ -52,11 +52,12 @@ def main(req: func.HttpRequest,context: func.Context) -> func.HttpResponse:
             logging.warning(f'Codec Success')
             # pre processing
             img_bin= files.read()
-            logging.warning(f'img_bin_shape:{img_bin.shape}img_bin_type{type(img_bin)}')
             img = prep.to_pil_image(img_bin)
+            x = np.array(img)
+            logging.warning(f'img.shape{x.shape}')
             #FIXED the width is too long
             input_batch_size, input_channel, input_height, input_width= (1,1,96,2000)
-            input_image = prep.preprocess_input(img, height=input_height, width=input_width)[None,:,:,:]
+            input_image = prep.preprocess_input(np.array(img), height=input_height, width=input_width)[None,:,:,:]
             logging.warning(f'Input_Image Success')
 
             request = predict_pb2.PredictRequest()

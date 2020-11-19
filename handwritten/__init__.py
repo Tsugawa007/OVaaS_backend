@@ -61,7 +61,7 @@ def main(req: func.HttpRequest,context: func.Context) -> func.HttpResponse:
 
             request = predict_pb2.PredictRequest()
             request.model_spec.name = 'handwritten-japanese-recognition'
-            request.inputs["data"].CopyFrom(make_tensor_proto(input_image, shape=input_image.shape))
+            request.inputs["actual_input"].CopyFrom(make_tensor_proto(input_image, shape=input_image.shape))
             logging.warning(f'Requse Detail  Success')
             #send to infer model by grpc
             start = time()

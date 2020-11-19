@@ -72,7 +72,7 @@ def main(req: func.HttpRequest,context: func.Context) -> func.HttpResponse:
 
 
             
-            timecost = time()-start_time
+            timecost = time()-start
             logging.warning(f"Inference complete,Takes{timecost}")
 
 

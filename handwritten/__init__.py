@@ -115,7 +115,7 @@ def main(req: func.HttpRequest,context: func.Context) -> func.HttpResponse:
                             
             return func.HttpResponse(body=imgbytes, status_code=200,mimetype=MIMETYPE,charset='utf-8')
             '''
-            return func.HttpResponse(f'Did you wirte {text}!! This connection is  successful!!')
+            return func.HttpResponse(f'{text[0]}')
 
 
         else:

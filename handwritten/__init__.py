@@ -15,6 +15,9 @@ from tensorflow import make_tensor_proto, make_ndarray
 from tensorflow_serving.apis import predict_pb2
 from tensorflow_serving.apis import prediction_service_pb2_grpc
 import subprocess
+import PIL.Image
+import PIL.ImageDraw
+import PIL.ImageFont
 
 # TODO
 # make a exception processing for if result == Null
@@ -73,22 +76,43 @@ def main(req: func.HttpRequest,context: func.Context) -> func.HttpResponse:
             stub = prediction_service_pb2_grpc.PredictionServiceStub(channel)
             output = stub.Predict(request,timeout = 10.0)
             logging.warning(f'Grpc Success')
-            x = make_ndarray(output.outputs["output"])
+            result = make_ndarray(output.outputs["output"])
 
 
             
             timecost = time()-start
             logging.warning(f"Inference complete,Takes{timecost}")
 
-            result = codec.decode(x)
+            text = codec.decode(result)
             
             #Error: Words are garbled
             subprocess.call('echo $LANG', shell=True)
             
             #logging.warning(f'Azure Function has{subprocess.call('echo $LANG', shell=True)}')
             #FIXIT just response result and status code
-            logging.warning(f'Did you wirte {result}!! This connection is  successful!!')
-            return func.HttpResponse(f"Did you wirte !! This HTTP triggered function executed successfully.")
+            logging.warning(f'Did you wirte {text}!! This connection is  successful!!')
+                            
+            #Changing string into jpeg
+            ttfontname = "japanese_font.ttc"
+            fontsize = 45
+
+            canvasSize    = ((len(text)+3)*fontsize,90)
+            backgroundRGB = (255, 255, 255)
+            textRGB       = (0, 0, 0)
+
+            img  = PIL.Image.new('RGB', canvasSize, backgroundRGB)
+            draw = PIL.ImageDraw.Draw(img)
+
+            font = PIL.ImageFont.truetype(ttfontname, fontsize)
+            textWidth, textHeight = draw.textsize(text,font=font)
+            textTopLeft = (canvasSize[0]//6, canvasSize[1]//2-textHeight//2) # 前から1/6，上下中央に配置
+            draw.text(textTopLeft, text, fill=textRGB, font=font)
+
+            imgbytes = img.tobytes()
+            MIMETYPE =  'image/jpeg'
+                            
+            return func.HttpResponse(body=imgbytes, status_code=200,mimetype=MIMETYPE,charset='utf-8')
+
 
         else:
             logging.warning(f'ID:{event_id},Failed to get file,down.')

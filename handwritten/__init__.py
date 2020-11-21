@@ -14,6 +14,7 @@ import grpc
 from tensorflow import make_tensor_proto, make_ndarray
 from tensorflow_serving.apis import predict_pb2
 from tensorflow_serving.apis import prediction_service_pb2_grpc
+import subprocess
 
 # TODO
 # make a exception processing for if result == Null
@@ -80,6 +81,7 @@ def main(req: func.HttpRequest,context: func.Context) -> func.HttpResponse:
             logging.warning(f"Inference complete,Takes{timecost}")
 
             result = codec.decode(x)
+            logging.warning(f'Azure Function has{subprocess.call('echo $LANG', shell=True)}')
             #FIXIT just response result and status code
             logging.warning(f'Did you wirte {result}!! This connection is  successful!!')
             return func.HttpResponse(f"Did you wirte !! This HTTP triggered function executed successfully.")

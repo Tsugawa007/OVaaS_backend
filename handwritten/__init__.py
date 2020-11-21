@@ -91,7 +91,7 @@ def main(req: func.HttpRequest,context: func.Context) -> func.HttpResponse:
             
             #logging.warning(f'Azure Function has{subprocess.call('echo $LANG', shell=True)}')
             #FIXIT just response result and status code
-            logging.warning(f'Did you wirte {text}!! This connection is  successful!!')
+            logging.warning(f'{text[0]}')
             
             '''               
             #Changing string into jpeg

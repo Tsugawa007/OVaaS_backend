@@ -95,11 +95,15 @@ def main(req: func.HttpRequest,context: func.Context) -> func.HttpResponse:
             logging.warning(f"TextType{type(text[0])}")
             #Error: Words are garbled
             logging.warning(chardet.detect(text[0].encode()))
-            text[0] = text[0].encode().decode('utf-8')
+            #text[0] = text[0].encode().decode('utf-8')
+            text = text[0].encode().decode('utf-8')
             
             #logging.warning(f'Azure Function has{subprocess.call('echo $LANG', shell=True)}')
             #FIXIT just response result and status code
-            logging.warning(f'{text[0]}')
+            logging.warning(f'Text Content{text}')
+            if text == None:
+                return func.HttpResponse(f'AI model could not understand your handwriting', status_code=400)
+            
             '''
             #text = text[0].encode("utf-8")
             file_name = "word.txt"
@@ -107,7 +111,7 @@ def main(req: func.HttpRequest,context: func.Context) -> func.HttpResponse:
             fileobj.write(text[0])
             fileobj.close()
              
-            
+            '''
             
             #Changing string into jpeg
             ttfontname = "japanese_font.ttc"
@@ -118,8 +122,8 @@ def main(req: func.HttpRequest,context: func.Context) -> func.HttpResponse:
             backgroundRGB = (255, 255, 255)
             textRGB       = (0, 0, 0)
             logging.warning(f'string color success')
-            img  = PIL.Image.new('RGB', canvasSize, backgroundRGB)
-            draw = PIL.ImageDraw.Draw(img)
+            word_img  = PIL.Image.new('RGB', canvasSize, backgroundRGB)
+            draw = PIL.ImageDraw.Draw(word_img)
             logging.warning(f'draw success')
 
             font = PIL.ImageFont.truetype(ttfontname, fontsize)
@@ -127,13 +131,15 @@ def main(req: func.HttpRequest,context: func.Context) -> func.HttpResponse:
             textTopLeft = (canvasSize[0]//6, canvasSize[1]//2-textHeight//2)
             draw.text(textTopLeft, text, fill=textRGB, font=font)
             logging.warning(f'text success')
+            
 
-            imgbytes = img.tobytes()
+            imgbytes = word_img.tobytes()
             MIMETYPE =  'image/jpeg'
-            '''
+            return func.HttpResponse(body=imgbytes, status_code=200,mimetype=MIMETYPE,charset='utf-8')
+            
             #return func.HttpResponse(body=file, status_code=200,mimetype='text/plain',charset='utf-8')               
             
-            return func.HttpResponse(f'{text[0]}')
+            #return func.HttpResponse(f'{text[0]}')
 
 
         else:

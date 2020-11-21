@@ -95,7 +95,7 @@ def main(req: func.HttpRequest,context: func.Context) -> func.HttpResponse:
             #FIXIT just response result and status code
             logging.warning(f'{text[0]}')
             
-            '''               
+            
             #Changing string into jpeg
             ttfontname = "japanese_font.ttc"
             fontsize = 45
@@ -116,8 +116,8 @@ def main(req: func.HttpRequest,context: func.Context) -> func.HttpResponse:
             MIMETYPE =  'image/jpeg'
                             
             return func.HttpResponse(body=imgbytes, status_code=200,mimetype=MIMETYPE,charset='utf-8')
-            '''
-            return func.HttpResponse(f'{text[0]}')
+            
+            #return func.HttpResponse(f'{text[0]}')
 
 
         else:

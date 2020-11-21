@@ -84,8 +84,8 @@ def main(req: func.HttpRequest,context: func.Context) -> func.HttpResponse:
             logging.warning(f"Inference complete,Takes{timecost}")
 
             text = codec.decode(result)
-            logging.warning(f"TextLength{len(text)}")
-            logging.warning(f"TextType{type(text)}")
+            logging.warning(f"TextLength{len(text[0])}")
+            logging.warning(f"TextType{type(text[0])}")
             #Error: Words are garbled
             subprocess.call('echo $LANG', shell=True)
             

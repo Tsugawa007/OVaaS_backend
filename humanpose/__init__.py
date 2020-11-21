@@ -62,6 +62,9 @@ def main(req: func.HttpRequest,context: func.Context) -> func.HttpResponse:
             stub = prediction_service_pb2_grpc.PredictionServiceStub(channel)
             result = stub.Predict(request, timeout=10.0)
             
+            logging.warning(f'Output:{result}')
+            logging.warning(f'OutputType:{type(result)}')
+            
             pafs = make_ndarray(result.outputs["Mconv7_stage2_L1"])[0]
             heatmaps = make_ndarray(result.outputs["Mconv7_stage2_L2"])[0]
 

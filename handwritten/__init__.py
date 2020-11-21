@@ -59,8 +59,8 @@ def main(req: func.HttpRequest,context: func.Context) -> func.HttpResponse:
             # pre processing
             img_bin= files.read()
             img = prep.to_pil_image(img_bin)
-            logging.warning(f'img.shape{np.array(img).shape}')
-            logging.warning(f'img.shape{np.array(img)[:, :, 0].shape}')
+            logging.warning(f'img.shape1{np.array(img).shape}')
+            logging.warning(f'img.shape2{np.array(img)[:, :, 0].shape}')
             #FIXED the width is too long
             input_batch_size, input_channel, input_height, input_width= (1,1,96,2000)
             input_image = prep.preprocess_input(np.array(img)[:, :, 0], height=input_height, width=input_width)[None,:,:,:]

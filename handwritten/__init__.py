@@ -18,6 +18,7 @@ import subprocess
 import PIL.Image
 import PIL.ImageDraw
 import PIL.ImageFont
+import chardet
 
 # TODO
 # make a exception processing for if result == Null
@@ -87,7 +88,8 @@ def main(req: func.HttpRequest,context: func.Context) -> func.HttpResponse:
             logging.warning(f"TextLength{len(text[0])}")
             logging.warning(f"TextType{type(text[0])}")
             #Error: Words are garbled
-            logging.warning(subprocess.call('echo $LANG', shell=True))
+            logging.warning(chardet.detect(text[0].encode()))
+            text[0] = text[0].encode().decode('utf-8')
             
             #logging.warning(f'Azure Function has{subprocess.call('echo $LANG', shell=True)}')
             #FIXIT just response result and status code

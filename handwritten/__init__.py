@@ -68,18 +68,19 @@ def main(req: func.HttpRequest,context: func.Context) -> func.HttpResponse:
             channel = grpc.insecure_channel("{}:{}".format(_HOST, _PORT))
             stub = prediction_service_pb2_grpc.PredictionServiceStub(channel)
             output = stub.Predict(request,timeout = 10.0)
-            logging.warning(f'Output:{output}')
-            logging.warning(f'OutputType:{type(output)}')
             logging.warning(f'Grpc Success')
+            x = make_ndarray(output.outputs["output"])
+            logging.warning(f"Output:{x}")
+            logging.warning(f"Output:{x.shape}")
 
 
             
             timecost = time()-start
             logging.warning(f"Inference complete,Takes{timecost}")
 
-            #result = codec.decode(output)
+            result = codec.decode(x)
             #FIXIT just response result and status code
-            #logging.warning(f'Did you wirte {result}!! This connection is  successful!!')
+            logging.warning(f'Did you wirte {result}!! This connection is  successful!!')
             return func.HttpResponse(f"Did you wirte !! This HTTP triggered function executed successfully.")
 
         else:

@@ -98,19 +98,22 @@ def main(req: func.HttpRequest,context: func.Context) -> func.HttpResponse:
             
             #Changing string into jpeg
             ttfontname = "japanese_font.ttc"
+            logging.warning(f'fontfile success')
             fontsize = 45
-
+            logging.warning(f'string detail success')
             canvasSize    = ((len(text)+3)*fontsize,90)
             backgroundRGB = (255, 255, 255)
             textRGB       = (0, 0, 0)
-
+            logging.warning(f'string color success')
             img  = PIL.Image.new('RGB', canvasSize, backgroundRGB)
             draw = PIL.ImageDraw.Draw(img)
+            logging.warning(f'draw success')
 
             font = PIL.ImageFont.truetype(ttfontname, fontsize)
             textWidth, textHeight = draw.textsize(text,font=font)
-            textTopLeft = (canvasSize[0]//6, canvasSize[1]//2-textHeight//2) # 前から1/6，上下中央に配置
+            textTopLeft = (canvasSize[0]//6, canvasSize[1]//2-textHeight//2)
             draw.text(textTopLeft, text, fill=textRGB, font=font)
+            logging.warning(f'text success')
 
             imgbytes = img.tobytes()
             MIMETYPE =  'image/jpeg'

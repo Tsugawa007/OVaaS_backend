@@ -94,13 +94,14 @@ def main(req: func.HttpRequest,context: func.Context) -> func.HttpResponse:
             #logging.warning(f'Azure Function has{subprocess.call('echo $LANG', shell=True)}')
             #FIXIT just response result and status code
             logging.warning(f'{text[0]}')
+            '''
             #text = text[0].encode("utf-8")
             file_name = "word.txt"
             fileobj = open(file, "w", encoding = "utf_8")
             fileobj.write(text[0])
             fileobj.close()
              
-            '''
+            
             
             #Changing string into jpeg
             ttfontname = "japanese_font.ttc"
@@ -124,10 +125,9 @@ def main(req: func.HttpRequest,context: func.Context) -> func.HttpResponse:
             imgbytes = img.tobytes()
             MIMETYPE =  'image/jpeg'
             '''
-            return func.HttpResponse(body=file, status_code=200,mimetype='text/plain',charset='utf-8')               
-            #return func.HttpResponse(body=imgbytes, status_code=200,mimetype=MIMETYPE,charset='utf-8')
+            #return func.HttpResponse(body=file, status_code=200,mimetype='text/plain',charset='utf-8')               
             
-            #return func.HttpResponse(f'{text[0]}')
+            return func.HttpResponse(f'{text[0]}')
 
 
         else:

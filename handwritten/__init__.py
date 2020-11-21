@@ -87,7 +87,7 @@ def main(req: func.HttpRequest,context: func.Context) -> func.HttpResponse:
             logging.warning(f"TextLength{len(text[0])}")
             logging.warning(f"TextType{type(text[0])}")
             #Error: Words are garbled
-            subprocess.call('echo $LANG', shell=True)
+            logging.warning(subprocess.call('echo $LANG', shell=True))
             
             #logging.warning(f'Azure Function has{subprocess.call('echo $LANG', shell=True)}')
             #FIXIT just response result and status code

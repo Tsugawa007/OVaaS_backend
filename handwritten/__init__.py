@@ -59,11 +59,16 @@ def main(req: func.HttpRequest,context: func.Context) -> func.HttpResponse:
             # pre processing
             img_bin= files.read()
             img = prep.to_pil_image(img_bin)
-            logging.warning(f'img.shape1{np.array(img).shape}')
-            logging.warning(f'img.shape2{np.array(img)[:, :, 0].shape}')
+            if np.array(img).ndim == 3:
+                img = np.array(img)[:, :, 0]
+            else:
+                img = np.array(img)
+            logging.warning(f'img.shape{img.shape}')
+            #logging.warning(f'img.shape2{np.array(img)[:, :, 0].shape}')
             #FIXED the width is too long
             input_batch_size, input_channel, input_height, input_width= (1,1,96,2000)
-            input_image = prep.preprocess_input(np.array(img)[:, :, 0], height=input_height, width=input_width)[None,:,:,:]
+            input_image = prep.preprocess_input(img, height=input_height, width=input_width)[None,:,:,:]
+            #input_image = prep.preprocess_input(np.array(img)[:, :, 0], height=input_height, width=input_width)[None,:,:,:]
             logging.warning(f'Input_Image Success')
 
             request = predict_pb2.PredictRequest()

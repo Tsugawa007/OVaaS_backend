@@ -84,14 +84,16 @@ def main(req: func.HttpRequest,context: func.Context) -> func.HttpResponse:
             logging.warning(f"Inference complete,Takes{timecost}")
 
             text = codec.decode(result)
-            
+            logging.warning(f"TextLength{len(text)}")
+            logging.warning(f"TextType{type(text)}")
             #Error: Words are garbled
             subprocess.call('echo $LANG', shell=True)
             
             #logging.warning(f'Azure Function has{subprocess.call('echo $LANG', shell=True)}')
             #FIXIT just response result and status code
             logging.warning(f'Did you wirte {text}!! This connection is  successful!!')
-                            
+            
+            '''               
             #Changing string into jpeg
             ttfontname = "japanese_font.ttc"
             fontsize = 45
@@ -112,6 +114,8 @@ def main(req: func.HttpRequest,context: func.Context) -> func.HttpResponse:
             MIMETYPE =  'image/jpeg'
                             
             return func.HttpResponse(body=imgbytes, status_code=200,mimetype=MIMETYPE,charset='utf-8')
+            '''
+            return func.HttpResponse(f'Success')
 
 
         else:

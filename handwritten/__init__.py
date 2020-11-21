@@ -55,7 +55,7 @@ def main(req: func.HttpRequest,context: func.Context) -> func.HttpResponse:
             CHARSET_PATH = "./handwritten/kondate_nakayosi_char_list.txt"
             characters = prep.get_characters(CHARSET_PATH)
             codec = CTCCodec(characters)
-            logging.warning(f'Codec Success')
+            logging.info(f'Codec Success')
             # pre processing
             img_bin= files.read()
             img = prep.to_pil_image(img_bin)
@@ -63,18 +63,18 @@ def main(req: func.HttpRequest,context: func.Context) -> func.HttpResponse:
                 img = np.array(img)[:, :, 0]
             else:
                 img = np.array(img)
-            logging.warning(f'img.shape{img.shape}')
+            logging.info(f'img.shape{img.shape}')
             #logging.warning(f'img.shape2{np.array(img)[:, :, 0].shape}')
             #FIXED the width is too long
             input_batch_size, input_channel, input_height, input_width= (1,1,96,2000)
             input_image = prep.preprocess_input(img, height=input_height, width=input_width)[None,:,:,:]
             #input_image = prep.preprocess_input(np.array(img)[:, :, 0], height=input_height, width=input_width)[None,:,:,:]
-            logging.warning(f'Input_Image Success')
+            logging.info(f'Input_Image Success')
 
             request = predict_pb2.PredictRequest()
             request.model_spec.name = 'handwritten-japanese-recognition'
             request.inputs["actual_input"].CopyFrom(make_tensor_proto(input_image, shape=input_image.shape))
-            logging.warning(f'Requse Detail  Success')
+            logging.info(f'Requse Detail  Success')
             
             #send to infer model by grpc
             
@@ -82,7 +82,7 @@ def main(req: func.HttpRequest,context: func.Context) -> func.HttpResponse:
             channel = grpc.insecure_channel("{}:{}".format(_HOST, _PORT))
             stub = prediction_service_pb2_grpc.PredictionServiceStub(channel)
             output = stub.Predict(request,timeout = 10.0)
-            logging.warning(f'Grpc Success')
+            logging.info(f'Grpc Success')
             result = make_ndarray(output.outputs["output"])
 
 
@@ -91,19 +91,19 @@ def main(req: func.HttpRequest,context: func.Context) -> func.HttpResponse:
             logging.warning(f"Inference complete,Takes{timecost}")
 
             text = codec.decode(result)
-            logging.warning(f"TextLength{len(text[0])}")
-            logging.warning(f"TextType{type(text[0])}")
+            logging.info(f"TextLength{len(text[0])}")
+            logging.info(f"TextType{type(text[0])}")
             #Error: Words are garbled
-            logging.warning(chardet.detect(text[0].encode()))
+            logging.info(chardet.detect(text[0].encode()))
             #text[0] = text[0].encode().decode('utf-8')
             text = text[0].encode().decode('utf-8')
             
             #logging.warning(f'Azure Function has{subprocess.call('echo $LANG', shell=True)}')
             #FIXIT just response result and status code
-            logging.warning(f'Text Content{text}')
+            logging.info(f'Text Content{text}')
             if text == None:
                 return func.HttpResponse(f'AI model could not understand your handwriting', status_code=400)
-            
+   
             '''
             #text = text[0].encode("utf-8")
             file_name = "word.txt"
@@ -111,7 +111,7 @@ def main(req: func.HttpRequest,context: func.Context) -> func.HttpResponse:
             fileobj.write(text[0])
             fileobj.close()
              
-            '''
+            
             
             #Changing string into jpeg
             ttfontname = "japanese_font.ttc"
@@ -131,13 +131,13 @@ def main(req: func.HttpRequest,context: func.Context) -> func.HttpResponse:
             textTopLeft = (canvasSize[0]//6, canvasSize[1]//2-textHeight//2)
             draw.text(textTopLeft, text, fill=textRGB, font=font)
             logging.warning(f'text success')
-            
-
             imgbytes = word_img.tobytes()
-            MIMETYPE =  'image/jpeg'
-            return func.HttpResponse(body=imgbytes, status_code=200,mimetype=MIMETYPE,charset='utf-8')
+            '''
+
             
-            #return func.HttpResponse(body=file, status_code=200,mimetype='text/plain',charset='utf-8')               
+            MIMETYPE =  'image/jpeg'
+            #return func.HttpResponse(body=imgbytes, status_code=200,mimetype=MIMETYPE,charset='utf-8')
+            return func.HttpResponse(body=text, status_code=200,mimetype='text/plain',charset='utf-8')               
             
             #return func.HttpResponse(f'{text[0]}')
 

@@ -143,7 +143,7 @@ def main(req: func.HttpRequest,context: func.Context) -> func.HttpResponse:
             return func.HttpResponse(json.dumps({
                 'count': len(text),
                 'text': f'{text}'
-            }) , status_code=200,mimetype='text/plain',charset='utf-8')               
+            }) , status_code=200, mimetype='application/json')               
             
             #return func.HttpResponse(f'{text[0]}')
 

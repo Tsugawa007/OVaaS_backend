@@ -97,13 +97,14 @@ def main(req: func.HttpRequest,context: func.Context) -> func.HttpResponse:
 #             logging.info(chardet.detect(text[0].encode()))
             #text[0] = text[0].encode().decode('utf-8')
 #             text = text[0].encode().decode('utf-8')
+            if len(text[0]) == 0:
+                return func.HttpResponse(f'AI model could not understand your handwriting', status_code=404)
+            
             text = text[0]
     
             #logging.warning(f'Azure Function has{subprocess.call('echo $LANG', shell=True)}')
             #FIXIT just response result and status code
             logging.info(f'Text Content{text}')
-            if len(text[0]) == 0:
-                return func.HttpResponse(f'AI model could not understand your handwriting', status_code=404)
    
             '''
             #text = text[0].encode("utf-8")

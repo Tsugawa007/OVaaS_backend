@@ -1,6 +1,7 @@
 # coding: utf-8
 import sys
 import os
+import json
 import logging
 
 import azure.functions as func
@@ -97,7 +98,7 @@ def main(req: func.HttpRequest,context: func.Context) -> func.HttpResponse:
 #             logging.info(chardet.detect(text[0].encode()))
             #text[0] = text[0].encode().decode('utf-8')
 #             text = text[0].encode().decode('utf-8')
-            if len(text[0]) == 0:
+            if len(text) == 0:
                 return func.HttpResponse(f'AI model could not understand your handwriting', status_code=404)
             
             text = text[0]
@@ -139,7 +140,10 @@ def main(req: func.HttpRequest,context: func.Context) -> func.HttpResponse:
             
 #             MIMETYPE =  'image/jpeg'
             #return func.HttpResponse(body=imgbytes, status_code=200,mimetype=MIMETYPE,charset='utf-8')
-            return func.HttpResponse(body=text, status_code=200,mimetype='text/plain',charset='utf-8')               
+            return func.HttpResponse(json.dumps({
+                'count': len(text),
+                'text': text
+            }) , status_code=200,mimetype='text/plain',charset='utf-8')               
             
             #return func.HttpResponse(f'{text[0]}')
 

@@ -53,7 +53,7 @@ def main(req: func.HttpRequest, context: func.Context) -> func.HttpResponse:
             input_image = img_l_rs.reshape(pre_process.input_batchsize, pre_process.input_channel,
                                            pre_process.input_height,
                                            pre_process.input_width).astype(np.float32)
-
+            logging.info(f'Input_Image Success')
             # res = self.exec_net.infer(inputs={self.input_blob: [img_l_rs]})
             # Model ServerにgRPCでアクセスしてモデルをコール
             request = predict_pb2.PredictRequest()
@@ -80,7 +80,7 @@ def main(req: func.HttpRequest, context: func.Context) -> func.HttpResponse:
             final_image = posp.create_output_image(original_frame, img_bgr_out)
             img_bytes = cv2.imencode('.jpg', final_image)[1].tobytes()
             mimetype = 'image/jpeg'
-
+            logging.info(f'Colorization End')    
             return func.HttpResponse(body=img_bytes, status_code=200, mimetype=mimetype, charset='utf-8')
 
         else:

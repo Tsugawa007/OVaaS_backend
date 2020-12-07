@@ -102,12 +102,12 @@ def main(req: func.HttpRequest, context: func.Context) -> func.HttpResponse:
     #                     url:{url}\n\
     #                     method:{method}\n")
     #     return func.HttpResponse(f'Service Error.check the log.', status_code=500)
-
+    logging.info(f'start...req is {req}') # Delete this line when the test is complete
     method = req.method
     url = req.url
-    header = req.headers
+    logging.info(f'start...req.files is {req.files}') # Delete this line when the test is complete
     files = req.files[_NAME]
-    logging.info(f'start ,files is {files}') # Delete this line when the test is complete
+    logging.info(f'start...files is {files}') # Delete this line when the test is complete
     if method != 'POST':
         logging.warning(f'ID:{event_id},the method was {files.content_type}.refused.')
         return func.HttpResponse(f'only accept POST method', status_code=400)

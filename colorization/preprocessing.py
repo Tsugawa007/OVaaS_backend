@@ -13,13 +13,14 @@ import errno
 class PreProcessing:
 
     def __init__(self, grpc_address='localhost', grpc_port=9000, model_name='colorization', model_version=None):
-
+        logging.info(f'start init') # Delete this line when the test is complete
         # Settings for accessing model server
         self.grpc_address = grpc_address
         self.grpc_port = grpc_port
         self.model_name = model_name
         self.model_version = model_version
         channel = grpc.insecure_channel("{}:{}".format(self.grpc_address, self.grpc_port))
+        logging.info(f'set grpc channel Success') # Delete this line when the test is complete
         self.stub = prediction_service_pb2_grpc.PredictionServiceStub(channel)
 
         # Get input shape info from Model Server

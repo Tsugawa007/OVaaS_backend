@@ -33,7 +33,9 @@ class PreProcessing:
         # coeffs = "public/colorization-v2/colorization-v2.npy"
         coeffs = "colorization-v2.npy"
         self.color_coeff = np.load(coeffs).astype(np.float32)
+        logging.info(f'color_coeff Success') # Delete this line when the test is complete
         assert self.color_coeff.shape == (313, 2), "Current shape of color coefficients does not match required shape"
+        logging.info(f'init Success') # Delete this line when the test is complete
 
     def __to_pil_image__(self, img_bin):
         _decoded = io.BytesIO(img_bin)
@@ -51,6 +53,7 @@ class PreProcessing:
         input_metadata, output_metadata = self.__get_input_and_output_meta_data__(result)
         input_blob = next(iter(input_metadata.keys()))
         output_blob = next(iter(output_metadata.keys()))
+        logging.info(f'color_coeff Success') # Delete this line when the test is complete
         return input_blob, input_metadata[input_blob]['shape'], output_blob, output_metadata[output_blob]['shape']
 
     def __get_input_and_output_meta_data__(self, response):
@@ -77,7 +80,7 @@ class PreProcessing:
             tensor_dtype = serving_outputs[output_blob].dtype
             output_blobs_keys[output_blob].update({'shape': outputs_shape})
             output_blobs_keys[output_blob].update({'dtype': tensor_dtype})
-
+        logging.info(f'__get_input_and_output_meta_data__ Success') # Delete this line when the test is complete
         return input_blobs_keys, output_blobs_keys
 
     def __preprocess_input__(self, original_frame):
@@ -89,7 +92,7 @@ class PreProcessing:
         img_rgb = frame.astype(np.float32) / 255
         img_lab = cv2.cvtColor(img_rgb, cv2.COLOR_RGB2Lab)
         img_l_rs = cv2.resize(img_lab.copy(), (self.input_width, self.input_height))[:, :, 0]
-
+        logging.info(f'__preprocess_input__ Success') # Delete this line when the test is complete
         return img_lab, img_l_rs
 
 

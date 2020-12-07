@@ -106,7 +106,9 @@ def main(req: func.HttpRequest, context: func.Context) -> func.HttpResponse:
     method = req.method
     url = req.url
     logging.info(f'start...req.files is {req.files}') # Delete this line when the test is complete
-    files = req.files[_NAME]
+    files2 = req.files[_NAME]
+    files = req.files['image']
+    logging.info(f'start...files2 is {files2}') # Delete this line when the test is complete
     logging.info(f'start...files is {files}') # Delete this line when the test is complete
     if method != 'POST':
         logging.warning(f'ID:{event_id},the method was {files.content_type}.refused.')

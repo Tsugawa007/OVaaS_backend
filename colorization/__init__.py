@@ -122,7 +122,7 @@ def main(req: func.HttpRequest, context: func.Context) -> func.HttpResponse:
         # pre processing
         img_bin = files.read()  # get image_bin form request
         logging.info(f'files.read() Success') # Delete this line when the test is complete
-        pre_process = prep.PreProcessing()
+        pre_process = prep.PreProcessing(grpc_address=_HOST,grpc_port=_PORT,model_name=_MODEL_NAME)
         original_frame = pre_process.__to_pil_image__(img_bin)
         logging.info(f'start...Read and pre-process input image') # Delete this line when the test is complete
         # Read and pre-process input image (NOTE: one image only)
@@ -137,9 +137,9 @@ def main(req: func.HttpRequest, context: func.Context) -> func.HttpResponse:
         request.model_spec.name = pre_process.model_name
         request.inputs[pre_process.input_name].CopyFrom(make_tensor_proto(input_image, shape=(input_image.shape)))
         start_time = time()
-        channel = grpc.insecure_channel("{}:{}".format(_HOST, _PORT))
-        stub = prediction_service_pb2_grpc.PredictionServiceStub(channel)
-        result = stub.Predict(request, 10.0)  # result includes a dictionary with all model outputs
+        
+        
+        result =pre_process.stub.Predict(request, 10.0)  # result includes a dictionary with all model outputs
         logging.info(f'Grpc Success') # Delete this line when the test is complete
         res = make_ndarray(result.outputs[pre_process.output_name])
 

@@ -12,15 +12,15 @@ import errno
 
 class PreProcessing:
 
-    def __init__(self, model_name='colorization', model_version=None):
+    def __init__(self, grpc_address='localhost', grpc_port=9000, model_name='colorization', model_version=None):
 
         # Settings for accessing model server
-        # self.grpc_address = grpc_address
-        # self.grpc_port = grpc_port
+        self.grpc_address = grpc_address
+        self.grpc_port = grpc_port
         self.model_name = model_name
         self.model_version = model_version
-        # channel = grpc.insecure_channel("{}:{}".format(self.grpc_address, self.grpc_port))
-        # self.stub = prediction_service_pb2_grpc.PredictionServiceStub(channel)
+        channel = grpc.insecure_channel("{}:{}".format(self.grpc_address, self.grpc_port))
+        self.stub = prediction_service_pb2_grpc.PredictionServiceStub(channel)
 
         # Get input shape info from Model Server
         self.input_name, input_shape, self.output_name, output_shape = self.__get_input_name_and_shape__()

@@ -123,6 +123,7 @@ def main(req: func.HttpRequest, context: func.Context) -> func.HttpResponse:
         img_bin = files.read()  # get image_bin form request
         logging.info(f'files.read() Success') # Delete this line when the test is complete
         pre_process = prep.PreProcessing(grpc_address=_HOST,grpc_port=_PORT,model_name=_MODEL_NAME)
+        logging.info(f' pre_process Success') # Delete this line when the test is complete
         original_frame = pre_process.__to_pil_image__(img_bin)
         logging.info(f'start...Read and pre-process input image') # Delete this line when the test is complete
         # Read and pre-process input image (NOTE: one image only)

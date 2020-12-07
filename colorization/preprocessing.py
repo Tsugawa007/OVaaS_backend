@@ -4,7 +4,7 @@ from PIL import Image
 import io
 from tensorflow_serving.apis import prediction_service_pb2_grpc, get_model_metadata_pb2
 import configparser
-
+import grpc
 # ファイルの存在チェック用モジュール
 import os
 import errno

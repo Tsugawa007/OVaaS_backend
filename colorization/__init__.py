@@ -24,7 +24,7 @@ _PORT = prep.__get_config__('COLORIZATION', 'port')
 def main(req: func.HttpRequest, context: func.Context) -> func.HttpResponse:
     _NAME = prep.__get_config__('COLORIZATION', 'name')
     _MODEL_NAME = prep.__get_config__('COLORIZATION', 'model_name')
-
+    logging.info(f"name is {_NAME}, model_name is {_MODEL_NAME}")
     event_id = context.invocation_id
     logging.info(f"Python {_MODEL_NAME} function start process.\nID:{event_id}\nback server host:{_HOST}:{_PORT}")
 

@@ -45,6 +45,7 @@ def main(req: func.HttpRequest, context: func.Context) -> func.HttpResponse:
 
             # pre processing
             img_bin = files.read()  # get image_bin form request
+            logging.info(f'files.read() Success')
             pre_process = prep.PreProcessing(model_name=_MODEL_NAME)
             original_frame = pre_process.__to_pil_image__(img_bin)
 
@@ -63,6 +64,7 @@ def main(req: func.HttpRequest, context: func.Context) -> func.HttpResponse:
             channel = grpc.insecure_channel("{}:{}".format(_HOST, _PORT))
             stub = prediction_service_pb2_grpc.PredictionServiceStub(channel)
             result = stub.Predict(request, 10.0)  # result includes a dictionary with all model outputs
+            logging.info(f'Grpc Success')
             res = make_ndarray(result.outputs[pre_process.output_name])
 
             update_res = (res * pre_process.color_coeff.transpose()[:, :, np.newaxis, np.newaxis]).sum(1)

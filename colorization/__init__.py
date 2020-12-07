@@ -26,7 +26,7 @@ def main(req: func.HttpRequest, context: func.Context) -> func.HttpResponse:
     _MODEL_NAME = prep.__get_config__('COLORIZATION', 'model_name')
     logging.info(f"name is {_NAME}, model_name is {_MODEL_NAME}")
     event_id = context.invocation_id
-    logging.info(f"Python {_MODEL_NAME} function start process.\nID:{event_id}\nback server host:{_HOST}:{_PORT}")
+    logging.info(f"Python colorization function start process.\nID:{event_id}\nback server host:{_HOST}:{_PORT}")
 
     # try:
     #     method = req.method
@@ -122,15 +122,15 @@ def main(req: func.HttpRequest, context: func.Context) -> func.HttpResponse:
         # pre processing
         img_bin = files.read()  # get image_bin form request
         logging.info(f'files.read() Success') # Delete this line when the test is complete
-        pre_process = prep.PreProcessing(model_name=_MODEL_NAME)
+        pre_process = prep.PreProcessing()
         original_frame = pre_process.__to_pil_image__(img_bin)
-
+        logging.info(f'start...Read and pre-process input image') # Delete this line when the test is complete
         # Read and pre-process input image (NOTE: one image only)
         img_lab, img_l_rs = pre_process.__preprocess_input__(original_frame)
         input_image = img_l_rs.reshape(pre_process.input_batchsize, pre_process.input_channel,
                                         pre_process.input_height,
                                         pre_process.input_width).astype(np.float32)
-        logging.info(f'Input_Image Success') #Delete this line when the test is complete
+        logging.info(f'Input_Image Success') # Delete this line when the test is complete
         # res = self.exec_net.infer(inputs={self.input_blob: [img_l_rs]})
         # Model ServerにgRPCでアクセスしてモデルをコール
         request = predict_pb2.PredictRequest()

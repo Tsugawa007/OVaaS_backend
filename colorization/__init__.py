@@ -33,19 +33,19 @@ def main(req: func.HttpRequest, context: func.Context) -> func.HttpResponse:
         url = req.url
         header = req.headers
         files = req.files[_NAME]
-
+        logging.info(f'start ,files is {files}') #Delete this line when the test is complete
         if method != 'POST':
             logging.warning(f'ID:{event_id},the method was {files.content_type}.refused.')
             return func.HttpResponse(f'only accept POST method', status_code=400)
-
+        logging.info(f'method is post') #Delete this line when the test is complete
         if files:
             if files.content_type != 'image/jpeg':
                 logging.warning(f'ID:{event_id},the file type was {files.content_type}.refused.')
                 return func.HttpResponse(f'only accept jpeg images', status_code=400)
-
+            logging.info(f'start files.read()') #Delete this line when the test is complete
             # pre processing
             img_bin = files.read()  # get image_bin form request
-            logging.info(f'files.read() Success')
+            logging.info(f'files.read() Success') #Delete this line when the test is complete
             pre_process = prep.PreProcessing(model_name=_MODEL_NAME)
             original_frame = pre_process.__to_pil_image__(img_bin)
 
@@ -54,7 +54,7 @@ def main(req: func.HttpRequest, context: func.Context) -> func.HttpResponse:
             input_image = img_l_rs.reshape(pre_process.input_batchsize, pre_process.input_channel,
                                            pre_process.input_height,
                                            pre_process.input_width).astype(np.float32)
-            logging.info(f'Input_Image Success')
+            logging.info(f'Input_Image Success') #Delete this line when the test is complete
             # res = self.exec_net.infer(inputs={self.input_blob: [img_l_rs]})
             # Model ServerにgRPCでアクセスしてモデルをコール
             request = predict_pb2.PredictRequest()
@@ -64,7 +64,7 @@ def main(req: func.HttpRequest, context: func.Context) -> func.HttpResponse:
             channel = grpc.insecure_channel("{}:{}".format(_HOST, _PORT))
             stub = prediction_service_pb2_grpc.PredictionServiceStub(channel)
             result = stub.Predict(request, 10.0)  # result includes a dictionary with all model outputs
-            logging.info(f'Grpc Success')
+            logging.info(f'Grpc Success') #Delete this line when the test is complete
             res = make_ndarray(result.outputs[pre_process.output_name])
 
             update_res = (res * pre_process.color_coeff.transpose()[:, :, np.newaxis, np.newaxis]).sum(1)
@@ -82,7 +82,7 @@ def main(req: func.HttpRequest, context: func.Context) -> func.HttpResponse:
             final_image = posp.create_output_image(original_frame, img_bgr_out)
             img_bytes = cv2.imencode('.jpg', final_image)[1].tobytes()
             mimetype = 'image/jpeg'
-            logging.info(f'Colorization End')    
+            logging.info(f'Colorization End')    #Delete this line when the test is complete 
             return func.HttpResponse(body=img_bytes, status_code=200, mimetype=mimetype, charset='utf-8')
 
         else:

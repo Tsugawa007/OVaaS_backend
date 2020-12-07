@@ -8,7 +8,7 @@ import grpc
 # ファイルの存在チェック用モジュール
 import os
 import errno
-
+import logging
 
 class PreProcessing:
 

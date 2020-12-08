@@ -47,11 +47,12 @@ class PreProcessing:
         logging.info(f'start  get_input_name_and_shape') # Delete this line when the test is complete
         metadata_field = "signature_def"
         request = get_model_metadata_pb2.GetModelMetadataRequest()
+        logging.info(f'get request is {request}') # Delete this line when the test is complete
         request.model_spec.name = self.model_name
         if self.model_version is not None:
             request.model_spec.version.value = self.model_version
         request.metadata_field.append(metadata_field)
-
+        logging.info(f'request is {request}') # Delete this line when the test is complete
         result = self.stub.GetModelMetadata(request, 10.0)  # result includes a dictionary with all model outputs
         input_metadata, output_metadata = self.__get_input_and_output_meta_data__(result)
         input_blob = next(iter(input_metadata.keys()))

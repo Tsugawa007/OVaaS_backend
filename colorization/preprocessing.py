@@ -20,7 +20,7 @@ class PreProcessing:
         self.model_name = model_name
         self.model_version = model_version
         channel = grpc.insecure_channel("{}:{}".format(self.grpc_address, self.grpc_port))
-        logging.info(f'set grpc channel Success') # Delete this line when the test is complete
+        logging.info(f'set grpc channel Success.channel is {channel}') # Delete this line when the test is complete
         self.stub = prediction_service_pb2_grpc.PredictionServiceStub(channel)
 
         # Get input shape info from Model Server
@@ -43,6 +43,7 @@ class PreProcessing:
         return Image.open(_decoded)
 
     def __get_input_name_and_shape__(self):
+        logging.info(f'start  get_input_name_and_shape') # Delete this line when the test is complete
         metadata_field = "signature_def"
         request = get_model_metadata_pb2.GetModelMetadataRequest()
         request.model_spec.name = self.model_name
@@ -58,6 +59,7 @@ class PreProcessing:
         return input_blob, input_metadata[input_blob]['shape'], output_blob, output_metadata[output_blob]['shape']
 
     def __get_input_and_output_meta_data__(self, response):
+        logging.info(f'start  get_input_and_output_meta_data') # Delete this line when the test is complete
         signature_def = response.metadata['signature_def']
         signature_map = get_model_metadata_pb2.SignatureDefMap()
         signature_map.ParseFromString(signature_def.value)
@@ -81,10 +83,11 @@ class PreProcessing:
             tensor_dtype = serving_outputs[output_blob].dtype
             output_blobs_keys[output_blob].update({'shape': outputs_shape})
             output_blobs_keys[output_blob].update({'dtype': tensor_dtype})
-        logging.info(f'__get_input_and_output_meta_data__ Success') # Delete this line when the test is complete
+        logging.info(f'get_input_and_output_meta_data Success') # Delete this line when the test is complete
         return input_blobs_keys, output_blobs_keys
 
     def __preprocess_input__(self, original_frame):
+        logging.info(f'start  preprocess_input') # Delete this line when the test is complete
         if original_frame.shape[2] > 1:
             frame = cv2.cvtColor(cv2.cvtColor(original_frame, cv2.COLOR_BGR2GRAY), cv2.COLOR_GRAY2RGB)
         else:
@@ -93,7 +96,7 @@ class PreProcessing:
         img_rgb = frame.astype(np.float32) / 255
         img_lab = cv2.cvtColor(img_rgb, cv2.COLOR_RGB2Lab)
         img_l_rs = cv2.resize(img_lab.copy(), (self.input_width, self.input_height))[:, :, 0]
-        logging.info(f'__preprocess_input__ Success') # Delete this line when the test is complete
+        logging.info(f'preprocess_input Success') # Delete this line when the test is complete
         return img_lab, img_l_rs
 
 

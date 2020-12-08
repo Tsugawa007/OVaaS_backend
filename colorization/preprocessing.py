@@ -19,6 +19,7 @@ class PreProcessing:
         self.grpc_port = grpc_port
         self.model_name = model_name
         self.model_version = model_version
+        logging.info(f'set self: grpc_address is {grpc_address}\n grpc_port is {grpc_port}\nmodel_name is {model_name}\n model_version is {model_version}') # Delete this line when the test is complete
         channel = grpc.insecure_channel("{}:{}".format(self.grpc_address, self.grpc_port))
         logging.info(f'set grpc channel Success.channel is {channel}') # Delete this line when the test is complete
         self.stub = prediction_service_pb2_grpc.PredictionServiceStub(channel)

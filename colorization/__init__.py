@@ -18,7 +18,8 @@ def main(req: func.HttpRequest, context: func.Context) -> func.HttpResponse:
 
     method = req.method
     url = req.url
-    files = req.files[_NAME]
+    # files = req.files[_NAME]
+    files = req.files['image']
     if method != 'POST':
         logging.warning(f'ID:{event_id},the method was {files.content_type}.refused.')
         return func.HttpResponse(f'only accept POST method', status_code=400)

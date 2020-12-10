@@ -29,9 +29,9 @@ def main(req: func.HttpRequest, context: func.Context) -> func.HttpResponse:
     start_time = time()
 
     # pre processing
-    input_image = prep.create_input_image(files)  # get image_bin form request
+    input_image = prep.create_input_image(files)  # get image form request
     logging.info(f'Input_Image Success')
-    original_frame = cv2.imread(input_source)
+    original_frame = cv2.imread(input_image)
     try:
         img_bgr_out = prep.RemoteColorization(_HOST, _PORT, _MODEL_NAME).infer(original_frame) 
     except Exception as e:

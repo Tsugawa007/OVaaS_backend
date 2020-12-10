@@ -8,6 +8,7 @@ from tensorflow_serving.apis import prediction_service_pb2_grpc, get_model_metad
 
 import configparser
 import os
+import io
 import errno
 from PIL import Image
 

@@ -2,7 +2,6 @@ import logging
 import azure.functions as func
 
 from time import time
-from PIL import Image
 from . import preprocessing as prep
 import cv2
 
@@ -30,11 +29,11 @@ def main(req: func.HttpRequest, context: func.Context) -> func.HttpResponse:
     start_time = time()
 
     # pre processing
-    input_source = files.read()  # get image_bin form request
+    input_image = prep.create_input_image(files)  # get image_bin form request
+    logging.info(f'Input_Image Success')
+    original_frame = cv2.imread(input_source)
     try:
-        colorization = prep.RemoteColorization(_HOST, _PORT, _MODEL_NAME)
-        original_frame = cv2.imread(input_source)
-        img_bgr_out = colorization.infer(original_frame)
+        img_bgr_out = prep.RemoteColorization(_HOST, _PORT, _MODEL_NAME).infer(original_frame) 
     except Exception as e:
         if 'StatusCode.DEADLINE_EXCEEDED' in str(e):
             logging.error(e)

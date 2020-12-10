@@ -9,7 +9,7 @@ from tensorflow_serving.apis import prediction_service_pb2_grpc, get_model_metad
 import configparser
 import os
 import errno
-
+from PIL import Image
 
 class RemoteColorization:
     def __init__(self, grpc_address='localhost', grpc_port=9000, model_name='colorization', model_version=None):
@@ -127,7 +127,7 @@ def create_output_image(original_frame, img_bgr_out):
     ir_image = [cv2.hconcat([original_image, colorize_image])]
     final_image = cv2.vconcat(ir_image)
     final_image = cv2.cvtColor(final_image, cv2.COLOR_BGR2RGB)
-
+    final_image = Image.fromarray(final_image)
     return final_image
 
 
@@ -142,3 +142,9 @@ def __get_config__(section, key):
 
     config_ini.read(config_ini_path, encoding='utf-8')
     return config_ini.get(section, key)
+
+def create_input_image(files):
+    final_image = files.read()
+    final_image = io.BytesIO(final_image)
+    final_image = Image.open(final_image)
+    return final_image

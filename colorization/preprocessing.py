@@ -148,4 +148,5 @@ def create_input_image(files):
     final_image = files.read()
     final_image = io.BytesIO(final_image)
     final_image = Image.open(final_image)
+    final_image = np.array(final_image)
     return final_image

@@ -1,27 +1,25 @@
-import numpy as np
 import cv2
-from PIL import Image
-import io
-from tensorflow_serving.apis import prediction_service_pb2_grpc, get_model_metadata_pb2
-import configparser
 import grpc
-# ファイルの存在チェック用モジュール
+import numpy as np
+
+from tensorflow import make_tensor_proto, make_ndarray
+from tensorflow_serving.apis import predict_pb2
+from tensorflow_serving.apis import prediction_service_pb2_grpc, get_model_metadata_pb2
+
+import configparser
 import os
 import errno
-import logging
 
-class PreProcessing:
 
+class RemoteColorization:
     def __init__(self, grpc_address='localhost', grpc_port=9000, model_name='colorization', model_version=None):
-        logging.info(f'start init') # Delete this line when the test is complete
+
         # Settings for accessing model server
         self.grpc_address = grpc_address
         self.grpc_port = grpc_port
         self.model_name = model_name
         self.model_version = model_version
-        logging.info(f'set self: grpc_address is {grpc_address}\n grpc_port is {grpc_port}\nmodel_name is {model_name}\n model_version is {model_version}') # Delete this line when the test is complete
         channel = grpc.insecure_channel("{}:{}".format(self.grpc_address, self.grpc_port))
-        logging.info(f'set grpc channel Success.channel is {channel}') # Delete this line when the test is complete
         self.stub = prediction_service_pb2_grpc.PredictionServiceStub(channel)
 
         # Get input shape info from Model Server
@@ -35,33 +33,23 @@ class PreProcessing:
         # coeffs = "public/colorization-v2/colorization-v2.npy"
         coeffs = "colorization-v2.npy"
         self.color_coeff = np.load(coeffs).astype(np.float32)
-        logging.info(f'color_coeff Success') # Delete this line when the test is complete
         assert self.color_coeff.shape == (313, 2), "Current shape of color coefficients does not match required shape"
-        logging.info(f'init Success') # Delete this line when the test is complete
-
-    def __to_pil_image__(self, img_bin):
-        _decoded = io.BytesIO(img_bin)
-        return Image.open(_decoded)
 
     def __get_input_name_and_shape__(self):
-        logging.info(f'start  get_input_name_and_shape') # Delete this line when the test is complete
         metadata_field = "signature_def"
         request = get_model_metadata_pb2.GetModelMetadataRequest()
-        logging.info(f'get request is {request}') # Delete this line when the test is complete
         request.model_spec.name = self.model_name
         if self.model_version is not None:
             request.model_spec.version.value = self.model_version
         request.metadata_field.append(metadata_field)
-        logging.info(f'request is {request}') # Delete this line when the test is complete
+
         result = self.stub.GetModelMetadata(request, 10.0)  # result includes a dictionary with all model outputs
         input_metadata, output_metadata = self.__get_input_and_output_meta_data__(result)
         input_blob = next(iter(input_metadata.keys()))
         output_blob = next(iter(output_metadata.keys()))
-        logging.info(f'color_coeff Success') # Delete this line when the test is complete
         return input_blob, input_metadata[input_blob]['shape'], output_blob, output_metadata[output_blob]['shape']
 
     def __get_input_and_output_meta_data__(self, response):
-        logging.info(f'start  get_input_and_output_meta_data') # Delete this line when the test is complete
         signature_def = response.metadata['signature_def']
         signature_map = get_model_metadata_pb2.SignatureDefMap()
         signature_map.ParseFromString(signature_def.value)
@@ -85,11 +73,10 @@ class PreProcessing:
             tensor_dtype = serving_outputs[output_blob].dtype
             output_blobs_keys[output_blob].update({'shape': outputs_shape})
             output_blobs_keys[output_blob].update({'dtype': tensor_dtype})
-        logging.info(f'get_input_and_output_meta_data Success') # Delete this line when the test is complete
+
         return input_blobs_keys, output_blobs_keys
 
     def __preprocess_input__(self, original_frame):
-        logging.info(f'start  preprocess_input') # Delete this line when the test is complete
         if original_frame.shape[2] > 1:
             frame = cv2.cvtColor(cv2.cvtColor(original_frame, cv2.COLOR_BGR2GRAY), cv2.COLOR_GRAY2RGB)
         else:
@@ -98,8 +85,50 @@ class PreProcessing:
         img_rgb = frame.astype(np.float32) / 255
         img_lab = cv2.cvtColor(img_rgb, cv2.COLOR_RGB2Lab)
         img_l_rs = cv2.resize(img_lab.copy(), (self.input_width, self.input_height))[:, :, 0]
-        logging.info(f'preprocess_input Success') # Delete this line when the test is complete
+
         return img_lab, img_l_rs
+
+    def infer(self, original_frame):
+        # Read and pre-process input image (NOTE: one image only)
+        img_lab, img_l_rs = self.__preprocess_input__(original_frame)
+        input_image = img_l_rs.reshape(self.input_batchsize, self.input_channel, self.input_height,
+                                       self.input_width).astype(np.float32)
+
+        # res = self.exec_net.infer(inputs={self.input_blob: [img_l_rs]})
+        # Model ServerにgRPCでアクセスしてモデルをコール
+        request = predict_pb2.PredictRequest()
+        request.model_spec.name = self.model_name
+        request.inputs[self.input_name].CopyFrom(make_tensor_proto(input_image, shape=(input_image.shape)))
+        result = self.stub.Predict(request, 10.0)  # result includes a dictionary with all model outputs
+        res = make_ndarray(result.outputs[self.output_name])
+
+        update_res = (res * self.color_coeff.transpose()[:, :, np.newaxis, np.newaxis]).sum(1)
+
+        out = update_res.transpose((1, 2, 0))
+        (h_orig, w_orig) = original_frame.shape[:2]
+        out = cv2.resize(out, (w_orig, h_orig))
+        img_lab_out = np.concatenate((img_lab[:, :, 0][:, :, np.newaxis], out), axis=2)
+        img_bgr_out = np.clip(cv2.cvtColor(img_lab_out, cv2.COLOR_Lab2BGR), 0, 1)
+
+        return img_bgr_out
+
+
+def create_output_image(original_frame, img_bgr_out):
+    (h_orig, w_orig) = original_frame.shape[:2]
+    im_show_size = (int(w_orig * (400 / h_orig)), 400)
+    original_image = cv2.resize(original_frame, im_show_size)
+    colorize_image = (cv2.resize(img_bgr_out, im_show_size) * 255).astype(np.uint8)
+
+    original_image = cv2.putText(original_image, 'Original', (25, 50),
+                                 cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2, cv2.LINE_AA)
+    colorize_image = cv2.putText(colorize_image, 'Colorize', (25, 50),
+                                 cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2, cv2.LINE_AA)
+
+    ir_image = [cv2.hconcat([original_image, colorize_image])]
+    final_image = cv2.vconcat(ir_image)
+    final_image = cv2.cvtColor(final_image, cv2.COLOR_BGR2RGB)
+
+    return final_image
 
 
 def __get_config__(section, key):

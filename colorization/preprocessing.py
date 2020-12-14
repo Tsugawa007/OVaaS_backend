@@ -1,7 +1,7 @@
 import cv2
 import grpc
 import numpy as np
-
+import base64
 from tensorflow import make_tensor_proto, make_ndarray
 from tensorflow_serving.apis import predict_pb2
 from tensorflow_serving.apis import prediction_service_pb2_grpc, get_model_metadata_pb2
@@ -145,8 +145,8 @@ def __get_config__(section, key):
     return config_ini.get(section, key)
 
 def create_input_image(files):
-    final_image = files.read()
-    final_image = io.BytesIO(final_image)
-    final_image = Image.open(final_image)
-    final_image = np.array(final_image)
+    files_image = files.read()
+    img_b64decode  = base64.b64encode(files_image)
+    img_array = np.fromstring(img_b64decode, np.uint8)
+    final_image = cv2.imdecode(img_array, cv2.COLOR_BGR2RGB)
     return final_image

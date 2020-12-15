@@ -53,6 +53,7 @@ def main(req: func.HttpRequest, context: func.Context) -> func.HttpResponse:
     final_image = prep.create_output_image(original_frame, img_bgr_out)
     logging.info(f"Successfully.final_image is {final_image}.")
     mimetype = 'image/jpeg'
+    
     # img_output_bytes = Image.fromarray(final_image)
     img_output_bytes = prep.cv2ImgToBytes(final_image)
     logging.info(f"Successfully.img_output_bytes is {img_output_bytes}.")

@@ -145,7 +145,7 @@ def __get_config__(section, key):
     return config_ini.get(section, key)
 
 def create_input_image(files):
-    files_image = files.read()
+    image_bytes = files.read()
     # img_b64decode  = base64.b64encode(files_image)
     # img_array = np.fromstring(img_b64decode, np.uint8)
     # final_image = cv2.imdecode(img_array, cv2.COLOR_BGR2RGB)

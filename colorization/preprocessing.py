@@ -128,7 +128,7 @@ def create_output_image(original_frame, img_bgr_out):
     ir_image = [cv2.hconcat([original_image, colorize_image])]
     final_image = cv2.vconcat(ir_image)
     final_image = cv2.cvtColor(final_image, cv2.COLOR_BGR2RGB)
-    final_image = Image.fromarray(final_image)
+    
     return final_image
 
 
@@ -146,7 +146,16 @@ def __get_config__(section, key):
 
 def create_input_image(files):
     files_image = files.read()
-    img_b64decode  = base64.b64encode(files_image)
-    img_array = np.fromstring(img_b64decode, np.uint8)
-    final_image = cv2.imdecode(img_array, cv2.COLOR_BGR2RGB)
+    # img_b64decode  = base64.b64encode(files_image)
+    # img_array = np.fromstring(img_b64decode, np.uint8)
+    # final_image = cv2.imdecode(img_array, cv2.COLOR_BGR2RGB)
+    final_image = bytesToCv2Img(image_bytes)
     return final_image
+
+def bytesToCv2Img(bytes):
+    return cv2.imdecode(np.fromstring(bytes,"uint8"), 1)
+
+	
+def cv2ImgToBytes(img):
+    return cv2.imencode('.jpg', img)[1].tobytes()
+ 

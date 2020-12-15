@@ -19,6 +19,7 @@ def main(req: func.HttpRequest, context: func.Context) -> func.HttpResponse:
     url = req.url
     # files = req.files[_NAME]
     files = req.files['image']
+    logging.info(f"files is {files}")
     if method != 'POST':
         logging.warning(f'ID:{event_id},the method was {files.content_type}.refused.')
         return func.HttpResponse(f'only accept POST method', status_code=400)
@@ -30,7 +31,7 @@ def main(req: func.HttpRequest, context: func.Context) -> func.HttpResponse:
 
     # pre processing
     input_image = prep.create_input_image(files)  # get image form request
-    logging.info(f'Input_Image Success')
+    logging.info(f'Input_Image Success.  {input_image}')
     original_frame = cv2.imread(input_image)
     try:
         img_bgr_out = prep.RemoteColorization(_HOST, _PORT, _MODEL_NAME).infer(original_frame) 
@@ -48,9 +49,11 @@ def main(req: func.HttpRequest, context: func.Context) -> func.HttpResponse:
 
     logging.info(f"Inference complete,Takes{time_cost}")
 
-    logging.info(f"Successfully.Create output image")
+    logging.info(f"Successfully.img_bgr_out is {img_bgr_out}.\nCreate output image.")
     final_image = prep.create_output_image(original_frame, img_bgr_out)
+    logging.info(f"Successfully.final_image is {final_image}.")
     mimetype = 'image/jpeg'
-    img_output_bytes = Image.fromarray(final_image)
-
+    # img_output_bytes = Image.fromarray(final_image)
+    img_output_bytes = prep.cv2ImgToBytes(final_image)
+    logging.info(f"Successfully.img_output_bytes is {img_output_bytes}.")
     return func.HttpResponse(body=img_output_bytes, status_code=200, mimetype=mimetype, charset='utf-8')

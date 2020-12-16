@@ -50,7 +50,7 @@ def main(req: func.HttpRequest, context: func.Context) -> func.HttpResponse:
     logging.info(f"Inference complete,Takes{time_cost}")
 
     logging.info(f"Successfully.img_bgr_out is {img_bgr_out}.\nCreate output image.")
-    final_image = prep.create_output_image(original_frame, img_bgr_out)
+    final_image = prep.create_output_image(img_bgr_out, img_bgr_out)
     logging.info(f"Successfully.final_image is {final_image}.")
     mimetype = 'image/jpeg'
     

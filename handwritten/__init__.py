@@ -144,7 +144,7 @@ def main(req: func.HttpRequest,context: func.Context) -> func.HttpResponse:
                 'count': len(text),
                 'timecost': timecost,
                 'text': text
-            }) , status_code=200, mimetype='application/json')               
+            }))         
             
             #return func.HttpResponse(f'{text[0]}')
 

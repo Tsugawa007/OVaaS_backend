@@ -140,11 +140,11 @@ def main(req: func.HttpRequest,context: func.Context) -> func.HttpResponse:
             
 #             MIMETYPE =  'image/jpeg'
             #return func.HttpResponse(body=imgbytes, status_code=200,mimetype=MIMETYPE,charset='utf-8')
-            res = {
+            return func.HttpResponse(json.dumps({
                 'count': len(text),
-                'text': f'{text}'
-            }
-            return func.HttpResponse(f'{json.dumps(res)}' , status_code=200, mimetype='application/json')               
+                'timecost': timecost,
+                'text': text
+            }) , status_code=200, mimetype='application/json')               
             
             #return func.HttpResponse(f'{text[0]}')
 

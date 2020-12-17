@@ -14,7 +14,7 @@ from PIL import Image
 
 class RemoteColorization:
     def __init__(self, grpc_address='localhost', grpc_port=9000, model_name='colorization', model_version=None):
-
+	word ="failed"
         # Settings for accessing model server
         self.grpc_address = grpc_address
         self.grpc_port = grpc_port
@@ -22,6 +22,7 @@ class RemoteColorization:
         self.model_version = model_version
         channel = grpc.insecure_channel("{}:{}".format(self.grpc_address, self.grpc_port))
         self.stub = prediction_service_pb2_grpc.PredictionServiceStub(channel)
+	word = "stub success!"
 
         # Get input shape info from Model Server
         self.input_name, input_shape, self.output_name, output_shape = self.__get_input_name_and_shape__()
@@ -34,7 +35,9 @@ class RemoteColorization:
         # coeffs = "public/colorization-v2/colorization-v2.npy"
         coeffs = "colorization-v2.npy"
         self.color_coeff = np.load(coeffs).astype(np.float32)
-        assert self.color_coeff.shape == (313, 2), "Current shape of color coefficients does not match required shape"
+	word = "color_coeff success!"
+	return word
+        #assert self.color_coeff.shape == (313, 2), "Current shape of color coefficients does not match required shape"
 
     def __get_input_name_and_shape__(self):
         metadata_field = "signature_def"

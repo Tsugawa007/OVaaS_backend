@@ -36,8 +36,8 @@ class RemoteColorization:
         coeffs = "colorization-v2.npy"
         self.color_coeff = np.load(coeffs).astype(np.float32)
 	word = "color_coeff success!"
-	return word
         #assert self.color_coeff.shape == (313, 2), "Current shape of color coefficients does not match required shape"
+	return word
 
     def __get_input_name_and_shape__(self):
         metadata_field = "signature_def"

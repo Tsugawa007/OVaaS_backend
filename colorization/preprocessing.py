@@ -20,7 +20,7 @@ class RemoteColorization:
         self.grpc_port = grpc_port
         self.model_name = model_name
         self.model_version = model_version
-	logging.info(f"check detail grpc_address:{self.grpc_address},grpc_port:{self.grpc_port}")
+	logging.info(f"check detail grpc_address:{grpc_address} grpc_port:{grpc_port}")
         channel = grpc.insecure_channel("{}:{}".format(self.grpc_address, self.grpc_port))
         self.stub = prediction_service_pb2_grpc.PredictionServiceStub(channel)
 	logging.info(f"suceess grpc detail!")

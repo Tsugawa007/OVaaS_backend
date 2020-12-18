@@ -118,6 +118,10 @@ class RemoteColorization:
         logging.info(f"input_shape{input_image.shape}")
         request = predict_pb2.PredictRequest()
         request.model_spec.name = self.model_name
+        modelName = self.model_name
+        inputName = self.input_name
+        logging.info(f"ModelName!!{modelName}")
+        logging.info(f"inputName!!{inputName}")
         request.inputs[self.input_name].CopyFrom(make_tensor_proto(input_image, shape=(input_image.shape)))
         #result = self.stub.Predict(request, 10.0)  # result includes a dictionary with all model outputs
         #res = make_ndarray(result.outputs[self.output_name])
@@ -125,6 +129,7 @@ class RemoteColorization:
         stub = prediction_service_pb2_grpc.PredictionServiceStub(channel)
         result = stub.Predict(request,timeout = 10.0)
         res = make_ndarray(result.outputs[self.output_name])
+        logging.info(f"result!!{res}")
 
         update_res = (res * self.color_coeff.transpose()[:, :, np.newaxis, np.newaxis]).sum(1)
 

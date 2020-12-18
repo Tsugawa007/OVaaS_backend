@@ -140,7 +140,7 @@ class RemoteColorization:
         logging.info(f"result contents{result}")
         res = result.outputs["class8_313_rh"]
         #res = make_ndarray(result.outputs["class8_313_rh"])
-        logging.info(f"resultafter!!{res}")
+        logging.info(f"resulta!!{res}")
         logging.info(f"resultype!{type(res})")
 
         update_res = (res * self.color_coeff.transpose()[:, :, np.newaxis, np.newaxis]).sum(1)

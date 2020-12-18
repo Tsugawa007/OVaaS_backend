@@ -25,7 +25,6 @@ class RemoteColorization:
         channel = grpc.insecure_channel("{}:{}".format(self.grpc_address, self.grpc_port))
         self.stub = prediction_service_pb2_grpc.PredictionServiceStub(channel)
         logging.info(f"stub success!")
-        logging.info(f"stub detail")
 
         # Get input shape info from Model Server
         
@@ -51,8 +50,7 @@ class RemoteColorization:
         logging.info(f"color_coeff success!")
         assert self.color_coeff.shape == (313, 2), "Current shape of color coefficients does not match required shape"
         logging.info(f"Sussessd")
-    
-    
+
     def __get_input_name_and_shape__(self):
         logging.info(f"start get_input_name")
         metadata_field = "signature_def"
@@ -68,9 +66,7 @@ class RemoteColorization:
         output_blob = next(iter(output_metadata.keys()))
         logging.info(f"get_input_name_and_shape_function success!")
         return input_blob, input_metadata[input_blob]['shape'], output_blob, output_metadata[output_blob]['shape']
-    
-    
-    
+
     def __get_input_and_output_meta_data__(self, response):
         logging.info(f"start get_input_and_output_meta_data")
         signature_def = response.metadata['signature_def']
@@ -86,6 +82,7 @@ class RemoteColorization:
             tensor_dtype = serving_inputs[input_blob].dtype
             input_blobs_keys[input_blob].update({'shape': inputs_shape})
             input_blobs_keys[input_blob].update({'dtype': tensor_dtype})
+
         serving_outputs = serving_default.outputs
         output_blobs_keys = {key: {} for key in serving_outputs.keys()}
         tensor_shape = {key: serving_outputs[key].tensor_shape
@@ -97,7 +94,6 @@ class RemoteColorization:
             output_blobs_keys[output_blob].update({'dtype': tensor_dtype})
         logging.info(f"Sussessed! get_input_and_output_meta_data")
         return input_blobs_keys, output_blobs_keys
-   
 
     def __preprocess_input__(self, original_frame):
         if original_frame.shape[2] > 1:
@@ -119,19 +115,16 @@ class RemoteColorization:
 
         # res = self.exec_net.infer(inputs={self.input_blob: [img_l_rs]})
         # Model ServerにgRPCでアクセスしてモデルをコール
-        logging.info(f"input_shape")
+        logging.info(f"input_shape{input_image.shape}")
         request = predict_pb2.PredictRequest()
         request.model_spec.name = self.model_name
         request.inputs[self.input_name].CopyFrom(make_tensor_proto(input_image, shape=(input_image.shape)))
-        logging.info(f'Request Detail  Success')
         #result = self.stub.Predict(request, 10.0)  # result includes a dictionary with all model outputs
         #res = make_ndarray(result.outputs[self.output_name])
         channel = grpc.insecure_channel("{}:{}".format(self.grpc_address, self.grpc_port))
-        logging.info(f'channel  Success')
         stub = prediction_service_pb2_grpc.PredictionServiceStub(channel)
         result = stub.Predict(request,timeout = 10.0)
         res = make_ndarray(result.outputs[self.output_name])
-        logging.info(f"result success!")
 
         update_res = (res * self.color_coeff.transpose()[:, :, np.newaxis, np.newaxis]).sum(1)
 
@@ -166,9 +159,11 @@ def __get_config__(section, key):
     # iniファイルの読み込み
     config_ini = configparser.ConfigParser()
     config_ini_path = os.path.split(os.path.realpath(__file__))[0] + '/config.ini'
+
     # 指定したiniファイルが存在しない場合、エラー発生
     if not os.path.exists(config_ini_path):
         raise FileNotFoundError(errno.ENOENT, os.strerror(errno.ENOENT), config_ini_path)
+
     config_ini.read(config_ini_path, encoding='utf-8')
     return config_ini.get(section, key)
 

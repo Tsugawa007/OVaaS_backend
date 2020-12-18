@@ -126,13 +126,12 @@ class RemoteColorization:
         logging.info(f'Request Detail  Success')
         #result = self.stub.Predict(request, 10.0)  # result includes a dictionary with all model outputs
         #res = make_ndarray(result.outputs[self.output_name])
-        logging.info(f'show details{self.input_name} {self.grpc_address} {self.grpc_port}')
         channel = grpc.insecure_channel("{}:{}".format(self.grpc_address, self.grpc_port))
         logging.info(f'channel  Success')
         stub = prediction_service_pb2_grpc.PredictionServiceStub(channel)
         result = stub.Predict(request,timeout = 10.0)
         res = make_ndarray(result.outputs[self.output_name])
-        logging.info(f'channel  Success{self.output_name}')
+        logging.info(f'channel  Success')
 
         update_res = (res * self.color_coeff.transpose()[:, :, np.newaxis, np.newaxis]).sum(1)
 

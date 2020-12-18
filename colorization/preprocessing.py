@@ -27,11 +27,21 @@ class RemoteColorization:
         logging.info(f"stub success!")
 
         # Get input shape info from Model Server
-        self.input_name, input_shape, self.output_name, output_shape = self.__get_input_name_and_shape__()
+        
+        
+        #self.input_name, input_shape, self.output_name, output_shape = self.__get_input_name_and_shape__()
+        self.input_name ="data_l"
+        self.output_name ="class8_313_rh"
+        '''
         self.input_batchsize = input_shape[0]
         self.input_channel = input_shape[1]
         self.input_height = input_shape[2]
         self.input_width = input_shape[3]
+        '''
+        self.input_batchsize = 1
+        self.input_channel = 1
+        self.input_height = 224
+        self.input_width = 224
 
         # Setup coeffs
         # coeffs = "public/colorization-v2/colorization-v2.npy"

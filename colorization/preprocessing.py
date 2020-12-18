@@ -29,20 +29,22 @@ class RemoteColorization:
         # Get input shape info from Model Server
         
         
-        self.input_name, input_shape, self.output_name, output_shape = self.__get_input_name_and_shape__()
+        #self.input_name, input_shape, self.output_name, output_shape = self.__get_input_name_and_shape__()
         
-        '''
+        
         self.input_batchsize = 1
         self.input_channel = 1
         self.input_height = 224
         self.input_width = 224
         self.input_name ="data_l"
         self.output_name ="class8_313_rh"
+        
         '''
         self.input_batchsize = input_shape[0]
         self.input_channel = input_shape[1]
         self.input_height = input_shape[2]
         self.input_width = input_shape[3]
+        '''
 
         # Setup coeffs
         # coeffs = "public/colorization-v2/colorization-v2.npy"
@@ -125,7 +127,7 @@ class RemoteColorization:
         logging.info(f"inputName!!{inputName}")
         grpcAddress = self.grpc_address
         grpcPort = self.grpc_port
-        request.inputs[self.input_name].CopyFrom(make_tensor_proto(input_image, shape=(input_image.shape)))
+        request.inputs[self.input_name].CopyFrom(make_tensor_proto(input_image, shape= input_image.shape))
         #result = self.stub.Predict(request, 10.0)  # result includes a dictionary with all model outputs
         #res = make_ndarray(result.outputs[self.output_name])
         logging.info(f"grpcAddress:{grpcAddress}grpcPort{grpcPort}")
@@ -133,7 +135,7 @@ class RemoteColorization:
         stub = prediction_service_pb2_grpc.PredictionServiceStub(channel)
         logging.info(f"stub2 success!")
         result = stub.Predict(request,timeout = 10.0)
-        logging.info(f"result!!{result}")
+        logging.info(f"resul!!")
         res = make_ndarray(result.outputs[self.output_name])
         logging.info(f"resultafter!!{res}")
 

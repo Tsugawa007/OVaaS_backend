@@ -104,10 +104,15 @@ class RemoteColorization:
 
         # res = self.exec_net.infer(inputs={self.input_blob: [img_l_rs]})
         # Model ServerにgRPCでアクセスしてモデルをコール
+        logging.info(f"input_shape{input_image.shape}")
         request = predict_pb2.PredictRequest()
         request.model_spec.name = self.model_name
         request.inputs[self.input_name].CopyFrom(make_tensor_proto(input_image, shape=(input_image.shape)))
-        result = self.stub.Predict(request, 10.0)  # result includes a dictionary with all model outputs
+        #result = self.stub.Predict(request, 10.0)  # result includes a dictionary with all model outputs
+        #res = make_ndarray(result.outputs[self.output_name])
+        channel = grpc.insecure_channel("{}:{}".format(self.grpc_address, self.grpc_port))
+        stub = prediction_service_pb2_grpc.PredictionServiceStub(channel)
+        result = stub.Predict(request,timeout = 10.0)
         res = make_ndarray(result.outputs[self.output_name])
 
         update_res = (res * self.color_coeff.transpose()[:, :, np.newaxis, np.newaxis]).sum(1)

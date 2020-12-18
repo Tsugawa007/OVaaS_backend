@@ -138,10 +138,10 @@ class RemoteColorization:
         result = stub.Predict(request,timeout = 10.0)
         logging.info(f"result!!")
         logging.info(f"result contents{result}")
-        res = result.outputs["class8_313_rh"]
+        
+        ##End Debug 1219 by Maiko
+        
         #res = make_ndarray(result.outputs["class8_313_rh"])
-        logging.info(f"resulta!!{res}")
-        logging.info(f"resultype!{type(res})")
 
         update_res = (res * self.color_coeff.transpose()[:, :, np.newaxis, np.newaxis]).sum(1)
 

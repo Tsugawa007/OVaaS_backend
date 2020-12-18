@@ -22,9 +22,9 @@ class RemoteColorization:
         self.grpc_port = grpc_port
         self.model_name = model_name
         self.model_version = model_version
-        channel = grpc.insecure_channel("{}:{}".format(self.grpc_address, self.grpc_port))
-        self.stub = prediction_service_pb2_grpc.PredictionServiceStub(channel)
-        logging.info(f"stub success!")
+        #channel = grpc.insecure_channel("{}:{}".format(self.grpc_address, self.grpc_port))
+        #self.stub = prediction_service_pb2_grpc.PredictionServiceStub(channel)
+        #logging.info(f"stub success!")
 
         # Get input shape info from Model Server
         
@@ -133,8 +133,8 @@ class RemoteColorization:
         logging.info(f"grpcAddress:{grpcAddress}grpcPort{grpcPort}")
         channel = grpc.insecure_channel("{}:{}".format(self.grpc_address, self.grpc_port))
         stub = prediction_service_pb2_grpc.PredictionServiceStub(channel)
-        logging.info(f"stub2 success!")
-        result = stub.Predict(request,timeout = 30.0)
+        logging.info(f"stub success!")
+        result = stub.Predict(request,timeout = 10.0)
         logging.info(f"resul!!")
         res = make_ndarray(result.outputs[self.output_name])
         logging.info(f"resultafter!!{res}")

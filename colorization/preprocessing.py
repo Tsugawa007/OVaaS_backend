@@ -45,7 +45,7 @@ class RemoteColorization:
 
         # Setup coeffs
         # coeffs = "public/colorization-v2/colorization-v2.npy"
-        coeffs = "./colorization-v2.npy"
+        coeffs = "./colorization/colorization-v2.npy"
         self.color_coeff = np.load(coeffs).astype(np.float32)
         logging.info(f"color_coeff success!")
         assert self.color_coeff.shape == (313, 2), "Current shape of color coefficients does not match required shape"

@@ -50,7 +50,8 @@ class RemoteColorization:
         logging.info(f"color_coeff success!")
         assert self.color_coeff.shape == (313, 2), "Current shape of color coefficients does not match required shape"
         logging.info(f"Sussessd")
-
+    
+    '''
     def __get_input_name_and_shape__(self):
         logging.info(f"start get_input_name")
         metadata_field = "signature_def"
@@ -66,7 +67,9 @@ class RemoteColorization:
         output_blob = next(iter(output_metadata.keys()))
         logging.info(f"get_input_name_and_shape_function success!")
         return input_blob, input_metadata[input_blob]['shape'], output_blob, output_metadata[output_blob]['shape']
-
+    '''
+    
+    '''
     def __get_input_and_output_meta_data__(self, response):
         logging.info(f"start get_input_and_output_meta_data")
         signature_def = response.metadata['signature_def']
@@ -94,6 +97,7 @@ class RemoteColorization:
             output_blobs_keys[output_blob].update({'dtype': tensor_dtype})
         logging.info(f"Sussessed! get_input_and_output_meta_data")
         return input_blobs_keys, output_blobs_keys
+   '''
 
     def __preprocess_input__(self, original_frame):
         if original_frame.shape[2] > 1:
@@ -158,7 +162,7 @@ def create_output_image(original_frame, img_bgr_out):
     logging.info(f"Sussessed! create_output_image")
     return final_image
 
-
+'''
 def __get_config__(section, key):
     # iniファイルの読み込み
     config_ini = configparser.ConfigParser()
@@ -170,7 +174,7 @@ def __get_config__(section, key):
 
     config_ini.read(config_ini_path, encoding='utf-8')
     return config_ini.get(section, key)
-
+'''
 
 def create_input_image(files):
     logging.info(f"start create_input_image")

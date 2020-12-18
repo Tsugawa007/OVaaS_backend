@@ -127,13 +127,14 @@ class RemoteColorization:
         logging.info(f"inputName!!{inputName}")
         grpcAddress = self.grpc_address
         grpcPort = self.grpc_port
-        request.inputs[self.input_name].CopyFrom(make_tensor_proto(input_image, shape= input_image.shape))
+        request.inputs["data_l"].CopyFrom(make_tensor_proto(input_image, shape= input_image.shape))
         #result = self.stub.Predict(request, 10.0)  # result includes a dictionary with all model outputs
         #res = make_ndarray(result.outputs[self.output_name])
         logging.info(f"grpcAddress:{grpcAddress}grpcPort{grpcPort}")
         channel = grpc.insecure_channel("{}:{}".format(self.grpc_address, self.grpc_port))
         stub = prediction_service_pb2_grpc.PredictionServiceStub(channel)
         logging.info(f"stub success!")
+        logging.info(f"input_image!{input_image}")
         result = stub.Predict(request,timeout = 10.0)
         logging.info(f"resul!!")
         res = make_ndarray(result.outputs[self.output_name])

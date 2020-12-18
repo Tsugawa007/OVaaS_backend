@@ -131,7 +131,7 @@ class RemoteColorization:
         channel = grpc.insecure_channel("{}:{}".format(self.grpc_address, self.grpc_port))
         stub = prediction_service_pb2_grpc.PredictionServiceStub(channel)
         logging.info(f"stub2 success!")
-        result = self.stub.Predict(request,timeout = 10.0)
+        result = stub.Predict(request,timeout = 10.0)
         logging.info(f"result!!{result}")
         res = make_ndarray(result.outputs[self.output_name])
         logging.info(f"resultafter!!{res}")

@@ -11,18 +11,21 @@ import os
 import io
 import errno
 from PIL import Image
+import logging
+
 
 class RemoteColorization:
     def __init__(self, grpc_address='localhost', grpc_port=9000, model_name='colorization', model_version=None):
-	word ="failed"
+        logging.info(f"start init")
         # Settings for accessing model server
+
         self.grpc_address = grpc_address
         self.grpc_port = grpc_port
         self.model_name = model_name
         self.model_version = model_version
         channel = grpc.insecure_channel("{}:{}".format(self.grpc_address, self.grpc_port))
         self.stub = prediction_service_pb2_grpc.PredictionServiceStub(channel)
-	word = "stub success!"
+        logging.info(f"stub success!")
 
         # Get input shape info from Model Server
         self.input_name, input_shape, self.output_name, output_shape = self.__get_input_name_and_shape__()
@@ -35,18 +38,19 @@ class RemoteColorization:
         # coeffs = "public/colorization-v2/colorization-v2.npy"
         coeffs = "colorization-v2.npy"
         self.color_coeff = np.load(coeffs).astype(np.float32)
-	word = "color_coeff success!"
+        logging.info(f"color_coeff success!")
         assert self.color_coeff.shape == (313, 2), "Current shape of color coefficients does not match required shape"
-	#return word
+        logging.info(f"Sussessd")
 
     def __get_input_name_and_shape__(self):
+        logging.info(f"start get_input_name")
         metadata_field = "signature_def"
         request = get_model_metadata_pb2.GetModelMetadataRequest()
         request.model_spec.name = self.model_name
         if self.model_version is not None:
             request.model_spec.version.value = self.model_version
         request.metadata_field.append(metadata_field)
-
+        logging.info(f"request is {request}")
         result = self.stub.GetModelMetadata(request, 10.0)  # result includes a dictionary with all model outputs
         input_metadata, output_metadata = self.__get_input_and_output_meta_data__(result)
         input_blob = next(iter(input_metadata.keys()))
@@ -54,6 +58,7 @@ class RemoteColorization:
         return input_blob, input_metadata[input_blob]['shape'], output_blob, output_metadata[output_blob]['shape']
 
     def __get_input_and_output_meta_data__(self, response):
+        logging.info(f"start get_input_and_output_meta_data")
         signature_def = response.metadata['signature_def']
         signature_map = get_model_metadata_pb2.SignatureDefMap()
         signature_map.ParseFromString(signature_def.value)
@@ -77,7 +82,7 @@ class RemoteColorization:
             tensor_dtype = serving_outputs[output_blob].dtype
             output_blobs_keys[output_blob].update({'shape': outputs_shape})
             output_blobs_keys[output_blob].update({'dtype': tensor_dtype})
-
+        logging.info(f"Sussessed! get_input_and_output_meta_data")
         return input_blobs_keys, output_blobs_keys
 
     def __preprocess_input__(self, original_frame):
@@ -116,22 +121,22 @@ class RemoteColorization:
 
         return img_bgr_out
 
-
 def create_output_image(original_frame, img_bgr_out):
+    logging.info(f"start create_output_image")
     (h_orig, w_orig) = original_frame.shape[:2]
     im_show_size = (int(w_orig * (400 / h_orig)), 400)
     original_image = cv2.resize(original_frame, im_show_size)
     colorize_image = (cv2.resize(img_bgr_out, im_show_size) * 255).astype(np.uint8)
 
     original_image = cv2.putText(original_image, 'Original', (25, 50),
-                                 cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2, cv2.LINE_AA)
+                                    cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2, cv2.LINE_AA)
     colorize_image = cv2.putText(colorize_image, 'Colorize', (25, 50),
-                                 cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2, cv2.LINE_AA)
+                                    cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2, cv2.LINE_AA)
 
     ir_image = [cv2.hconcat([original_image, colorize_image])]
     final_image = cv2.vconcat(ir_image)
     final_image = cv2.cvtColor(final_image, cv2.COLOR_BGR2RGB)
-    
+    logging.info(f"Sussessed! create_output_image")
     return final_image
 
 
@@ -147,18 +152,21 @@ def __get_config__(section, key):
     config_ini.read(config_ini_path, encoding='utf-8')
     return config_ini.get(section, key)
 
+
 def create_input_image(files):
+    logging.info(f"start create_input_image")
     image_bytes = files.read()
     # img_b64decode  = base64.b64encode(files_image)
     # img_array = np.fromstring(img_b64decode, np.uint8)
     # final_image = cv2.imdecode(img_array, cv2.COLOR_BGR2RGB)
     final_image = bytesToCv2Img(image_bytes)
+    logging.info(f"final_image is {final_image}")
     return final_image
 
-def bytesToCv2Img(bytes):
-    return cv2.imdecode(np.fromstring(bytes,"uint8"), 1)
 
-	
+def bytesToCv2Img(bytes):
+    return cv2.imdecode(np.fromstring(bytes, "uint8"), 1)
+
+
 def cv2ImgToBytes(img):
     return cv2.imencode('.jpg', img)[1].tobytes()
- 

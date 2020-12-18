@@ -34,9 +34,11 @@ def main(req: func.HttpRequest, context: func.Context) -> func.HttpResponse:
     logging.info(f'Input_Image Success.')
     # original_frame = cv2.imread(input_image)
     try:
-        #word = prep.RemoteColorization(_HOST, _PORT, _MODEL_NAME)
-        img_bgr_out = prep.RemoteColorization(_HOST, _PORT, _MODEL_NAME).infer(input_image) 
-        #logging.info(f"{word}")
+        #  img_bgr_out = prep.RemoteColorization(_HOST, _PORT, _MODEL_NAME).infer(input_image) 
+        colorization = prep.RemoteColorization(_HOST, _PORT, _MODEL_NAME)
+       
+        logging.info(f"{colorization}")
+        img_bgr_out=colorization.infer
     except Exception as e:
         if 'StatusCode.DEADLINE_EXCEEDED' in str(e):
             logging.error(e)

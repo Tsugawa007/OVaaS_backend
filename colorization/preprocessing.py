@@ -50,11 +50,11 @@ class RemoteColorization:
             request.model_spec.version.value = self.model_version
         request.metadata_field.append(metadata_field)
         logging.info(f"request is {request}")
-        #result = self.stub.GetModelMetadata(request, 10.0)  # result includes a dictionary with all model outputs
+        result = self.stub.GetModelMetadata(request, 10.0)  # result includes a dictionary with all model outputs
         input_metadata, output_metadata = self.__get_input_and_output_meta_data__(result)
         input_blob = next(iter(input_metadata.keys()))
         output_blob = next(iter(output_metadata.keys()))
-        logging.info(f"output_blob&input_blob success!")
+        logging.info(f"get_input_name_and_shape_function success!")
         return input_blob, input_metadata[input_blob]['shape'], output_blob, output_metadata[output_blob]['shape']
 
     def __get_input_and_output_meta_data__(self, response):

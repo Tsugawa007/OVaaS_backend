@@ -120,7 +120,7 @@ class RemoteColorization:
         # Model ServerにgRPCでアクセスしてモデルをコール
         logging.info(f"input_shape{input_image.shape}")
         request = predict_pb2.PredictRequest()
-        request.model_spec.name = self.model_name
+        request.model_spec.name = "colorization"
         modelName = self.model_name
         inputName = self.input_name
         logging.info(f"ModelName!!{modelName}")

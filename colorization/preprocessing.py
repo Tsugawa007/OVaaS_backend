@@ -13,7 +13,6 @@ import errno
 from PIL import Image
 import logging
 
-
 class RemoteColorization:
     def __init__(self, grpc_address='localhost', grpc_port=9000, model_name='colorization', model_version=None):
         logging.info(f"start init")

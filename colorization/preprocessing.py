@@ -143,12 +143,15 @@ class RemoteColorization:
         res = make_ndarray(output.outputs["class8_313_rh"])
         logging.info(f"res!!{res}")
         update_res = (res * self.color_coeff.transpose()[:, :, np.newaxis, np.newaxis]).sum(1)
+        logging.info(f"update_res!!{update_res}")
 
         out = update_res.transpose((1, 2, 0))
         (h_orig, w_orig) = original_frame.shape[:2]
         out = cv2.resize(out, (w_orig, h_orig))
+        logging.info(f"out!!{out}")
         img_lab_out = np.concatenate((img_lab[:, :, 0][:, :, np.newaxis], out), axis=2)
         img_bgr_out = np.clip(cv2.cvtColor(img_lab_out, cv2.COLOR_Lab2BGR), 0, 1)
+        logging.info(f"img_bgr_out!!{img_bgr_out}")
 
         return img_bgr_out
 

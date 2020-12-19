@@ -135,13 +135,12 @@ class RemoteColorization:
         stub = prediction_service_pb2_grpc.PredictionServiceStub(channel)
         logging.info(f"stub success!")
         logging.info(f"input_image!{input_image}")
-        result = stub.Predict(request,timeout = 10.0)
+        output = stub.Predict(request,timeout = 10.0)
         logging.info(f"result!!")
-        logging.info(f"result contents{result}")
+        logging.info(f"result contents{output}")
         
         ##End Debug 1219 by Maiko
-        
-        #res = make_ndarray(result.outputs["class8_313_rh"])
+        res = make_ndarray(output.outputs["class8_313_rh"])
 
         update_res = (res * self.color_coeff.transpose()[:, :, np.newaxis, np.newaxis]).sum(1)
 

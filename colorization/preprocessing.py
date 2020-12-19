@@ -157,7 +157,9 @@ class RemoteColorization:
 
 def create_output_image(original_frame, img_bgr_out):
     logging.info(f"start create_output_image")
+    logging.info(f"img_bgr_out:{img_bgr_out.shape}")
     (h_orig, w_orig) = original_frame.shape[:2]
+    logging.info(f"h_orig:{h_orig} w_orig:{w_orig}")
     im_show_size = (int(w_orig * (400 / h_orig)), 400)
     original_image = cv2.resize(original_frame, im_show_size)
     colorize_image = (cv2.resize(img_bgr_out, im_show_size) * 255).astype(np.uint8)

@@ -16,22 +16,14 @@ import logging
 class RemoteColorization:
     def __init__(self, grpc_address='localhost', grpc_port=9000, model_name='colorization', model_version=None):
         logging.info(f"start init")
+        
         # Settings for accessing model server
 
         self.grpc_address = grpc_address
         self.grpc_port = grpc_port
         self.model_name = model_name
         self.model_version = model_version
-        #channel = grpc.insecure_channel("{}:{}".format(self.grpc_address, self.grpc_port))
-        #self.stub = prediction_service_pb2_grpc.PredictionServiceStub(channel)
-        #logging.info(f"stub success!")
-
-        # Get input shape info from Model Server
-        
-        
-        #self.input_name, input_shape, self.output_name, output_shape = self.__get_input_name_and_shape__()
-        
-        
+            
         self.input_batchsize = 1
         self.input_channel = 1
         self.input_height = 224
@@ -39,20 +31,10 @@ class RemoteColorization:
         self.input_name ="data_l"
         self.output_name ="class8_313_rh"
         
-        '''
-        self.input_batchsize = input_shape[0]
-        self.input_channel = input_shape[1]
-        self.input_height = input_shape[2]
-        self.input_width = input_shape[3]
-        '''
-
         # Setup coeffs
-        # coeffs = "public/colorization-v2/colorization-v2.npy"
         coeffs = "./colorization/colorization-v2.npy"
         self.color_coeff = np.load(coeffs).astype(np.float32)
-        logging.info(f"color_coeff success!")
         assert self.color_coeff.shape == (313, 2), "Current shape of color coefficients does not match required shape"
-        logging.info(f"Sussessd")
 
     def __get_input_name_and_shape__(self):
         logging.info(f"start get_input_name")
@@ -116,42 +98,27 @@ class RemoteColorization:
         input_image = img_l_rs.reshape(self.input_batchsize, self.input_channel, self.input_height,
                                        self.input_width).astype(np.float32)
 
-        # res = self.exec_net.infer(inputs={self.input_blob: [img_l_rs]})
         # Model ServerにgRPCでアクセスしてモデルをコール
-        logging.info(f"input_shape{input_image.shape}")
         request = predict_pb2.PredictRequest()
         request.model_spec.name = "colorization"
         modelName = self.model_name
         inputName = self.input_name
-        logging.info(f"ModelName!!{modelName}")
-        logging.info(f"inputName!!{inputName}")
         grpcAddress = self.grpc_address
         grpcPort = self.grpc_port
         request.inputs["data_l"].CopyFrom(make_tensor_proto(input_image, shape= input_image.shape))
-        #result = self.stub.Predict(request, 10.0)  # result includes a dictionary with all model outputs
-        #res = make_ndarray(result.outputs[self.output_name])
-        logging.info(f"grpcAddress:{grpcAddress}grpcPort{grpcPort}")
         channel = grpc.insecure_channel("{}:{}".format(self.grpc_address, self.grpc_port))
         stub = prediction_service_pb2_grpc.PredictionServiceStub(channel)
-        logging.info(f"stub success!")
-        logging.info(f"input_image!{input_image}")
         output = stub.Predict(request,timeout = 10.0)
-        logging.info(f"result!!")
-        logging.info(f"result contents{output}")
         
         ##End Debug 1219 by Maiko
         res = make_ndarray(output.outputs["class8_313_rh"])
-        logging.info(f"res!!{res}")
         update_res = (res * self.color_coeff.transpose()[:, :, np.newaxis, np.newaxis]).sum(1)
-        logging.info(f"update_res!!{update_res}")
 
         out = update_res.transpose((1, 2, 0))
         (h_orig, w_orig) = original_frame.shape[:2]
         out = cv2.resize(out, (w_orig, h_orig))
-        logging.info(f"out!!{out}")
         img_lab_out = np.concatenate((img_lab[:, :, 0][:, :, np.newaxis], out), axis=2)
         img_bgr_out = np.clip(cv2.cvtColor(img_lab_out, cv2.COLOR_Lab2BGR), 0, 1)
-        logging.info(f"img_bgr_out!!{img_bgr_out}")
 
         return img_bgr_out
 
@@ -163,6 +130,7 @@ def create_output_image(original_frame, img_bgr_out):
     im_show_size = (int(w_orig * (400 / h_orig)), 400)
     original_image = cv2.resize(original_frame, im_show_size)
     colorize_image = (cv2.resize(img_bgr_out, im_show_size) * 255).astype(np.uint8)
+    logging.info(f"colorize_image:{colorize_image.shape}")
 
     original_image = cv2.putText(original_image, 'Original', (25, 50),
                                     cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2, cv2.LINE_AA)
@@ -170,6 +138,7 @@ def create_output_image(original_frame, img_bgr_out):
                                     cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2, cv2.LINE_AA)
 
     ir_image = [cv2.hconcat([original_image, colorize_image])]
+    
     final_image = cv2.vconcat(ir_image)
     final_image = cv2.cvtColor(final_image, cv2.COLOR_BGR2RGB)
     logging.info(f"Sussessed! create_output_image")
@@ -196,7 +165,6 @@ def create_input_image(files):
     # img_array = np.fromstring(img_b64decode, np.uint8)
     # final_image = cv2.imdecode(img_array, cv2.COLOR_BGR2RGB)
     final_image = bytesToCv2Img(image_bytes)
-    logging.info(f"final_image is {final_image}")
     return final_image
 
 

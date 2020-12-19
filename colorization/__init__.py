@@ -37,7 +37,7 @@ def main(req: func.HttpRequest, context: func.Context) -> func.HttpResponse:
         img_bgr_out = prep.RemoteColorization(_HOST, _PORT, _MODEL_NAME).infer(input_image) 
         #colorization = prep.RemoteColorization(_HOST, _PORT, _MODEL_NAME)
        
-        logging.info(f"colorization is {colorization}")
+        logging.info(f"outpre success!")
         #img_bgr_out=colorization.infer(input_image)
     except Exception as e:
         if 'StatusCode.DEADLINE_EXCEEDED' in str(e):

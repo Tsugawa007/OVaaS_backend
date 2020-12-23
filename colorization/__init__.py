@@ -1,6 +1,6 @@
 import logging
 import azure.functions as func
-
+import os
 from time import time
 from . import preprocessing as prep
 import cv2

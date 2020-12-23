@@ -26,7 +26,7 @@ import chardet
 
 #_HOST = 'ovaasbackservertest.japaneast.cloudapp.azure.com'
 _HOST = os.environ.get("VM_IPADDRESS")
-_PORT = '10003'
+_PORT = os.environ.get("HAND_WRITTEN_PORT")
 def main(req: func.HttpRequest,context: func.Context) -> func.HttpResponse:
 
     _NAME = 'image'

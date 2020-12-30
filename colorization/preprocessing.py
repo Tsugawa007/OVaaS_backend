@@ -169,7 +169,7 @@ def create_input_image(files):
 
 
 def bytesToCv2Img(bytes):
-    #return cv2.imdecode(np.fromstring(bytes, "uint8"), 1)
+    ##return cv2.imdecode(np.fromstring(bytes, "uint8"), 1)
     return cv2.imdecode(np.fromstring(bytes, "float32"), 1)
     
 

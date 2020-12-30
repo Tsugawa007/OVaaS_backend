@@ -49,6 +49,7 @@ def main(req: func.HttpRequest,context: func.Context) -> func.HttpResponse:
             img_cv_copied = cv2.cvtColor(np.asarray(img),cv2.COLOR_RGB2BGR)
             img = prep.resize(img)  # w,h = 456,256
             img_np = np.array(img)
+            img_np = img_np.astype(np.float32)
             img_np = prep.transpose(img_np)  # hwc > bchw [1,3,256,456]
             # print(img_np.shape)
             

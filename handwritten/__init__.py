@@ -65,6 +65,7 @@ def main(req: func.HttpRequest,context: func.Context) -> func.HttpResponse:
                 img = np.array(img)[:, :, 0]
             else:
                 img = np.array(img)
+            img = img.astype(np.float32)
             logging.info(f'img.shape{img.shape}')
             #logging.warning(f'img.shape2{np.array(img)[:, :, 0].shape}')
             #FIXED the width is too long

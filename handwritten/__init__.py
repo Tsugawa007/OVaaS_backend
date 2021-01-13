@@ -9,7 +9,7 @@ import numpy as np
 from PIL import Image
 from . import preprocessing as prep
 from time import time
-###1106
+
 from .codec import CTCCodec 
 import grpc
 from tensorflow import make_tensor_proto, make_ndarray

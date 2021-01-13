@@ -7,7 +7,7 @@ import cv2
 
 
 def main(req: func.HttpRequest, context: func.Context) -> func.HttpResponse:
-    _HOST = os.environ.get("VM_IPADDRESS")
+    _HOST = os.environ.get("COLORIZATION_IPADDRESS")
     _PORT = os.environ.get("COLORIZATION_PORT")
     _NAME = prep.__get_config__('COLORIZATION', 'name')
     _MODEL_NAME = prep.__get_config__('COLORIZATION', 'model_name')

@@ -29,7 +29,7 @@ def main(req: func.HttpRequest, context: func.Context) -> func.HttpResponse:
     
     start_time = time()
 
-    # pre processing
+    ##pre processing
     input_image = prep.create_input_image(files)  # get image form request
     logging.info(f'Input_Image Success.')
  

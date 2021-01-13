@@ -19,7 +19,7 @@ from tensorflow_serving.apis import prediction_service_pb2_grpc
 import traceback
 import cv2
 
-_HOST = os.environ.get("VM_IPADDRESS")
+_HOST = os.environ.get("HUMAN_IPADDRESS")
 _PORT = os.environ.get("HUMAN_POSE_PORT")
 
 def main(req: func.HttpRequest,context: func.Context) -> func.HttpResponse:

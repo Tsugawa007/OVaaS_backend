@@ -25,7 +25,7 @@ import chardet
 # make a exception processing for if result == Null
 
 #_HOST = 'ovaasbackservertest.japaneast.cloudapp.azure.com'
-_HOST = os.environ.get("VM_IPADDRESS")
+_HOST = os.environ.get("HANDWRITTEN_IPADDRESS")
 _PORT = os.environ.get("HAND_WRITTEN_PORT")
 def main(req: func.HttpRequest,context: func.Context) -> func.HttpResponse:
 

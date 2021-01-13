@@ -43,7 +43,7 @@ def main(req: func.HttpRequest,context: func.Context) -> func.HttpResponse:
                 logging.warning(f'ID:{event_id},the file type was {files.content_type}.refused.')
                 return func.HttpResponse(f'only accept jpeg images',status_code=400)
 
-            # pre processing
+            ## pre processing
             img_bin = files.read()  # get image_bin form request
             img = prep.to_pil_image(img_bin)
             img_cv_copied = cv2.cvtColor(np.asarray(img),cv2.COLOR_RGB2BGR)

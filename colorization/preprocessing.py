@@ -26,8 +26,8 @@ class RemoteColorization:
             
         self.input_batchsize = 1
         self.input_channel = 1
-        self.input_height = 224
-        self.input_width = 224
+        self.input_height = 256
+        self.input_width = 256
         self.input_name ="data_l"
         self.output_name ="class8_313_rh"
         

@@ -56,7 +56,7 @@ class RemoteColorization:
         request.metadata_field.append(metadata_field)
         logging.info(f"request is {request}")
         # result = self.stub.GetModelMetadata(request, 10.0)
-        result = self.stub.GetModelMetadata(request, time=10.0)  # result includes a dictionary with all model outputs
+        result = self.stub.GetModelMetadata(request, 10.0)  # result includes a dictionary with all model outputs
         input_metadata, output_metadata = self.__get_input_and_output_meta_data__(result)
         input_blob = next(iter(input_metadata.keys()))
         output_blob = next(iter(output_metadata.keys()))

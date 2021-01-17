@@ -120,7 +120,8 @@ class RemoteColorization:
         # channel = grpc.insecure_channel("{}:{}".format(self.grpc_address, self.grpc_port))
         # stub = prediction_service_pb2_grpc.PredictionServiceStub(channel)
 
-        request.model_spec.name = self.model_name
+        # request.model_spec.name = self.model_name
+        request.model_spec.name = 'colorization'
         request.inputs[self.input_name].CopyFrom(
             make_tensor_proto(input_image, shape=(input_image.shape)))
 

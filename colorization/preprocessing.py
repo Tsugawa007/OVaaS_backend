@@ -48,7 +48,7 @@ class RemoteColorization:
 
     def __get_input_name_and_shape__(self):
         logging.info(f"start get_input_name")
-        metadata_field = "signature_def"
+        metadata_field = self.model_name
         request = get_model_metadata_pb2.GetModelMetadataRequest()
         request.model_spec.name = 'colorization'
         if self.model_version is not None:
@@ -120,12 +120,12 @@ class RemoteColorization:
         # channel = grpc.insecure_channel("{}:{}".format(self.grpc_address, self.grpc_port))
         # stub = prediction_service_pb2_grpc.PredictionServiceStub(channel)
 
-        # request.model_spec.name = self.model_name
-        request.model_spec.name = 'colorization'
+        request.model_spec.name = self.model_name
+        # request.model_spec.name = 'colorization'
         request.inputs[self.input_name].CopyFrom(
             make_tensor_proto(input_image, shape=(input_image.shape)))
 
-        output = self.stub.Predict(request,timeout = 10.0)
+        result = self.stub.Predict(request, timeout=10.0)
         
         ##End Debug 1219 by Maiko
         # res = make_ndarray(output.outputs["class8_313_rh"])

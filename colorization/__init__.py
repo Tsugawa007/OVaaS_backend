@@ -34,7 +34,7 @@ def main(req: func.HttpRequest, context: func.Context) -> func.HttpResponse:
     logging.info(f'Input_Image Success.')
  
     try:
-        img_bgr_out = prep.RemoteColorization(_HOST, _PORT, _MODEL_NAME).infer(input_image) 
+        img_bgr_out = prep.RemoteColorization(_HOST, _PORT).infer(input_image) 
        
         logging.info(f"outpre success!")
         

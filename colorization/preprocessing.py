@@ -23,7 +23,7 @@ class RemoteColorization:
         self.grpc_port = grpc_port
         self.model_name = model_name
         self.model_version = model_version
-            
+        logging.info(f"model_name is {model_name}")
         # self.input_batchsize = 1
         # self.input_channel = 1
         # self.input_height = 256
@@ -40,7 +40,7 @@ class RemoteColorization:
         self.input_channel = input_shape[1]
         self.input_height = input_shape[2]
         self.input_width = input_shape[3]
-        
+        logging.info(f"start get_input_name")
         # Setup coeffs
         coeffs = "./colorization/colorization-v2.npy"
         self.color_coeff = np.load(coeffs).astype(np.float32)
@@ -50,7 +50,7 @@ class RemoteColorization:
         logging.info(f"start get_input_name")
         metadata_field = "signature_def"
         request = get_model_metadata_pb2.GetModelMetadataRequest()
-        request.model_spec.name = self.model_name
+        request.model_spec.name = 'colorization'
         if self.model_version is not None:
             request.model_spec.version.value = self.model_version
         request.metadata_field.append(metadata_field)

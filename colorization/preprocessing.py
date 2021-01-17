@@ -48,9 +48,9 @@ class RemoteColorization:
 
     def __get_input_name_and_shape__(self):
         logging.info(f"start get_input_name")
-        metadata_field = self.model_name
+        metadata_field = "signature_def"
         request = get_model_metadata_pb2.GetModelMetadataRequest()
-        request.model_spec.name = 'colorization'
+        request.model_spec.name = self.model_name
         if self.model_version is not None:
             request.model_spec.version.value = self.model_version
         request.metadata_field.append(metadata_field)
@@ -124,9 +124,9 @@ class RemoteColorization:
         # request.model_spec.name = 'colorization'
         request.inputs[self.input_name].CopyFrom(
             make_tensor_proto(input_image, shape=(input_image.shape)))
-
-        result = self.stub.Predict(request, timeout=10.0)
-        
+        logging.info(f"start get result")
+        result = self.stub.Predict(request, 10.0)
+        logging.info(f"result is {result}")
         ##End Debug 1219 by Maiko
         # res = make_ndarray(output.outputs["class8_313_rh"])
         res = make_ndarray(result.outputs[self.output_name])

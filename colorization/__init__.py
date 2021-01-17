@@ -19,7 +19,7 @@ def main(req: func.HttpRequest, context: func.Context) -> func.HttpResponse:
     url = req.url
 
     files = req.files['image']
-    logging.info(f"files is {files}")
+    # logging.info(f"files is {files}")
     if method != 'POST':
         logging.warning(f'ID:{event_id},the method was {files.content_type}.refused.')
         return func.HttpResponse(f'only accept POST method', status_code=400)
@@ -36,7 +36,7 @@ def main(req: func.HttpRequest, context: func.Context) -> func.HttpResponse:
     try:
         img_bgr_out = prep.RemoteColorization(_HOST, _PORT).infer(input_image) 
        
-        logging.info(f"outpre success!")
+        logging.info(f"Colorization success!")
         
     except Exception as e:
         if 'StatusCode.DEADLINE_EXCEEDED' in str(e):
@@ -50,14 +50,13 @@ def main(req: func.HttpRequest, context: func.Context) -> func.HttpResponse:
 
     time_cost = time() - start_time
 
-    logging.info(f"Inference complete,Takes{time_cost}")
+    logging.info(f"Inference completed.Takes {'%.1f'%time_cost} seconds.")
 
-    #logging.info(f"Successfully.img_bgr_out is {img_bgr_out}.\nCreate output image.")
     final_image = prep.create_output_image(input_image, img_bgr_out)
-    logging.info(f"Successfully.final_image is {final_image}.")
+    # logging.info(f"Successfully.final_image is {final_image}.")
     mimetype = 'image/jpeg'
     
   
     img_output_bytes = prep.cv2ImgToBytes(final_image)
-    logging.info(f"Successfully.img_output_bytes is {img_output_bytes}.")
+    logging.info(f"Success!Return response.")
     return func.HttpResponse(body=img_output_bytes, status_code=200, mimetype=mimetype, charset='utf-8')

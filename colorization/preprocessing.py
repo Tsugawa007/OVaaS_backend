@@ -24,12 +24,22 @@ class RemoteColorization:
         self.model_name = model_name
         self.model_version = model_version
             
-        self.input_batchsize = 1
-        self.input_channel = 1
-        self.input_height = 256
-        self.input_width = 256
-        self.input_name ="data_l"
-        self.output_name ="class8_313_rh"
+        # self.input_batchsize = 1
+        # self.input_channel = 1
+        # self.input_height = 256
+        # self.input_width = 256
+        # self.input_name = "data_l"
+        # self.output_name = "class8_313_rh"
+        
+        channel = grpc.insecure_channel("{}:{}".format(self.grpc_address, self.grpc_port))
+        self.stub = prediction_service_pb2_grpc.PredictionServiceStub(channel)
+
+        # Get input shape info from Model Server
+        self.input_name, input_shape, self.output_name, output_shape = self.__get_input_name_and_shape__()
+        self.input_batchsize = input_shape[0]
+        self.input_channel = input_shape[1]
+        self.input_height = input_shape[2]
+        self.input_width = input_shape[3]
         
         # Setup coeffs
         coeffs = "./colorization/colorization-v2.npy"
@@ -100,18 +110,24 @@ class RemoteColorization:
 
         # Model ServerにgRPCでアクセスしてモデルをコール
         request = predict_pb2.PredictRequest()
-        request.model_spec.name = "colorization"
-        modelName = self.model_name
-        inputName = self.input_name
-        grpcAddress = self.grpc_address
-        grpcPort = self.grpc_port
-        request.inputs["data_l"].CopyFrom(make_tensor_proto(input_image, shape= input_image.shape))
-        channel = grpc.insecure_channel("{}:{}".format(self.grpc_address, self.grpc_port))
-        stub = prediction_service_pb2_grpc.PredictionServiceStub(channel)
+        # request.model_spec.name = "colorization"
+        # modelName = self.model_name
+        # inputName = self.input_name
+        # grpcAddress = self.grpc_address
+        # grpcPort = self.grpc_port
+        # request.inputs["data_l"].CopyFrom(make_tensor_proto(input_image, shape= input_image.shape))
+        # channel = grpc.insecure_channel("{}:{}".format(self.grpc_address, self.grpc_port))
+        # stub = prediction_service_pb2_grpc.PredictionServiceStub(channel)
+
+        request.model_spec.name = self.model_name
+        request.inputs[self.input_name].CopyFrom(
+            make_tensor_proto(input_image, shape=(input_image.shape)))
+
         output = stub.Predict(request,timeout = 10.0)
         
         ##End Debug 1219 by Maiko
-        res = make_ndarray(output.outputs["class8_313_rh"])
+        # res = make_ndarray(output.outputs["class8_313_rh"])
+        res = make_ndarray(result.outputs[self.output_name])
         update_res = (res * self.color_coeff.transpose()[:, :, np.newaxis, np.newaxis]).sum(1)
 
         out = update_res.transpose((1, 2, 0))

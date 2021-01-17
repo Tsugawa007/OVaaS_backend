@@ -18,18 +18,10 @@ class RemoteColorization:
         logging.info(f"start init")
         
         # Settings for accessing model server
-
         self.grpc_address = grpc_address
         self.grpc_port = grpc_port
         self.model_name = model_name
         self.model_version = model_version
-        logging.info(f"model_name is {model_name}")
-        # self.input_batchsize = 1
-        # self.input_channel = 1
-        # self.input_height = 256
-        # self.input_width = 256
-        # self.input_name = "data_l"
-        # self.output_name = "class8_313_rh"
         
         channel = grpc.insecure_channel("{}:{}".format(self.grpc_address, self.grpc_port))
         self.stub = prediction_service_pb2_grpc.PredictionServiceStub(channel)
@@ -54,8 +46,7 @@ class RemoteColorization:
         if self.model_version is not None:
             request.model_spec.version.value = self.model_version
         request.metadata_field.append(metadata_field)
-        logging.info(f"request is {request}")
-        # result = self.stub.GetModelMetadata(request, 10.0)
+        
         result = self.stub.GetModelMetadata(request, 10.0)  # result includes a dictionary with all model outputs
         input_metadata, output_metadata = self.__get_input_and_output_meta_data__(result)
         input_blob = next(iter(input_metadata.keys()))
@@ -111,24 +102,12 @@ class RemoteColorization:
 
         # Model ServerにgRPCでアクセスしてモデルをコール
         request = predict_pb2.PredictRequest()
-        # request.model_spec.name = "colorization"
-        # modelName = self.model_name
-        # inputName = self.input_name
-        # grpcAddress = self.grpc_address
-        # grpcPort = self.grpc_port
-        # request.inputs["data_l"].CopyFrom(make_tensor_proto(input_image, shape= input_image.shape))
-        # channel = grpc.insecure_channel("{}:{}".format(self.grpc_address, self.grpc_port))
-        # stub = prediction_service_pb2_grpc.PredictionServiceStub(channel)
-
         request.model_spec.name = self.model_name
-        # request.model_spec.name = 'colorization'
         request.inputs[self.input_name].CopyFrom(
             make_tensor_proto(input_image, shape=(input_image.shape)))
-        logging.info(f"start get result")
         result = self.stub.Predict(request, 10.0)
-        logging.info(f"result is {result}")
+        
         ##End Debug 1219 by Maiko
-        # res = make_ndarray(output.outputs["class8_313_rh"])
         res = make_ndarray(result.outputs[self.output_name])
         update_res = (res * self.color_coeff.transpose()[:, :, np.newaxis, np.newaxis]).sum(1)
 
@@ -177,7 +156,6 @@ def __get_config__(section, key):
 
 
 def create_input_image(files):
-    logging.info(f"start create_input_image")
     image_bytes = files.read()
     # img_b64decode  = base64.b64encode(files_image)
     # img_array = np.fromstring(img_b64decode, np.uint8)

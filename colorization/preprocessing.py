@@ -141,20 +141,6 @@ def create_output_image(original_frame, img_bgr_out):
     # logging.info(f"Sussessed! create_output_image")
     return final_image
 
-
-def __get_config__(section, key):
-    # iniファイルの読み込み
-    config_ini = configparser.ConfigParser()
-    config_ini_path = os.path.split(os.path.realpath(__file__))[0] + '/config.ini'
-
-    # 指定したiniファイルが存在しない場合、エラー発生
-    if not os.path.exists(config_ini_path):
-        raise FileNotFoundError(errno.ENOENT, os.strerror(errno.ENOENT), config_ini_path)
-
-    config_ini.read(config_ini_path, encoding='utf-8')
-    return config_ini.get(section, key)
-
-
 def create_input_image(files):
     image_bytes = files.read()
     # img_b64decode  = base64.b64encode(files_image)

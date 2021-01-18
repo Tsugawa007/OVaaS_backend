@@ -15,7 +15,7 @@ import logging
 
 class RemoteColorization:
     def __init__(self, grpc_address='localhost', grpc_port=9000, model_name='colorization', model_version=None):
-        # logging.info(f"start init")
+        logging.info(f"start init")
         
         # Settings for accessing model server
         self.grpc_address = grpc_address
@@ -39,7 +39,7 @@ class RemoteColorization:
         assert self.color_coeff.shape == (313, 2), "Current shape of color coefficients does not match required shape"
 
     def __get_input_name_and_shape__(self):
-        # logging.info(f"start get_input_name")
+        logging.info(f"start get_input_name")
         metadata_field = "signature_def"
         request = get_model_metadata_pb2.GetModelMetadataRequest()
         request.model_spec.name = self.model_name
@@ -51,11 +51,11 @@ class RemoteColorization:
         input_metadata, output_metadata = self.__get_input_and_output_meta_data__(result)
         input_blob = next(iter(input_metadata.keys()))
         output_blob = next(iter(output_metadata.keys()))
-        # logging.info(f"get_input_name_and_shape_function success!")
+        logging.info(f"get_input_name_and_shape_function success!")
         return input_blob, input_metadata[input_blob]['shape'], output_blob, output_metadata[output_blob]['shape']
 
     def __get_input_and_output_meta_data__(self, response):
-        # logging.info(f"start get_input_and_output_meta_data")
+        logging.info(f"start get_input_and_output_meta_data")
         signature_def = response.metadata['signature_def']
         signature_map = get_model_metadata_pb2.SignatureDefMap()
         signature_map.ParseFromString(signature_def.value)
@@ -79,7 +79,7 @@ class RemoteColorization:
             tensor_dtype = serving_outputs[output_blob].dtype
             output_blobs_keys[output_blob].update({'shape': outputs_shape})
             output_blobs_keys[output_blob].update({'dtype': tensor_dtype})
-        # logging.info(f"Sussessed! get_input_and_output_meta_data")
+        logging.info(f"Sussessed! get_input_and_output_meta_data")
         return input_blobs_keys, output_blobs_keys
 
     def __preprocess_input__(self, original_frame):
@@ -120,7 +120,7 @@ class RemoteColorization:
         return img_bgr_out
 
 def create_output_image(original_frame, img_bgr_out):
-    # logging.info(f"start create_output_image")
+    logging.info(f"start create_output_image")
     # logging.info(f"img_bgr_out:{img_bgr_out.shape}")
     (h_orig, w_orig) = original_frame.shape[:2]
     logging.info(f"image height is {h_orig}, width is {w_orig}")
@@ -138,7 +138,7 @@ def create_output_image(original_frame, img_bgr_out):
     
     final_image = cv2.vconcat(ir_image)
     final_image = cv2.cvtColor(final_image, cv2.COLOR_BGR2RGB)
-    # logging.info(f"Sussessed! create_output_image")
+    logging.info(f"Sussessed! create_output_image")
     return final_image
 
 def create_input_image(files):
